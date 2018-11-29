@@ -1,0 +1,29 @@
+{
+  "name": "Demo with express and Latest Swagger",
+  "version": "1.0.0",
+  "description": "Demo with new swagger",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://manishgulati28@bitbucket.org/bluenumber/bluebox-backend.git"
+  },
+  "author": "chicmic",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/bluenumber/bluebox-backend#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "bluebird": "^3.5.3",
+    "dotenv": "^6.1.0",
+    "express": "^4.16.4",
+    "express-joi-validator": "^2.0.0",
+    "joi": "^14.3.0",
+    "joi-to-swagger": "^3.0.0",
+    "jsonwebtoken": "^8.4.0",
+    "mongoose": "^5.3.13",
+    "swagger-ui-express": "^4.0.1"
+  }
+}
