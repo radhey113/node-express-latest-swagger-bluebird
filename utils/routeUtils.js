@@ -1,13 +1,14 @@
 
 'use strict';
 
+/** modules **/ 
 const swaggerUI = require('swagger-ui-express');
 const swaggerConfig = require('../config/swaggerConfig');
 const swJson = require('../services/swaggerService');
 const Joi = require('joi');
 
 const CONFIG = require('../config');
-const CONSTANTS = require('../utils/constants');
+const { AVAILABLE_AUTHS, RESPONSEMESSAGES, MESSAGES } = require('../utils/constants');
 const { convertErrorIntoReadableForm } = require('./utils');
 
 const authService = require('../services/authService');
@@ -17,7 +18,7 @@ let routeUtils = {};
 routeUtils.route = async (app, routes = []) => {
     routes.forEach(route => {
         let middlewares = [getValidatorMiddleware(route)];
-        if (route.auth === CONSTANTS.AVAILABLE_AUTHS.SUPER_ADMIN) {
+        if (route.auth === AVAILABLE_AUTHS.SUPER_ADMIN) {
             middlewares.push(authService.superAdminValidate());
         }
         app.route(route.path)[route.method.toLowerCase()](...middlewares, getHandlerMethod(route.handler));
@@ -54,7 +55,7 @@ let getValidatorMiddleware = (route) => {
             return next();
         }).catch((err) => {
             let error = convertErrorIntoReadableForm(err);
-            let responseObject = CONSTANTS.RESPONSEMESSAGES.ERROR.BAD_REQUEST(error.message.toString());
+            let responseObject = RESPONSEMESSAGES.ERROR.BAD_REQUEST(error.message.toString());
             return response.status(responseObject.statusCode).json(responseObject);
         });
     };
@@ -76,8 +77,9 @@ let getHandlerMethod = (handler) => {
                 response.status(result.statusCode).json(result);
             })
             .catch((err) => {
+                console.log(err);
                 if (!err.statusCode && !err.status) {
-                    err = CONSTANTS.RESPONSEMESSAGES.ERROR.INTERNAL_SERVER_ERROR(CONSTANTS.MESSAGES.SOMETHING_WENT_WRONG);
+                    err = RESPONSEMESSAGES.ERROR.INTERNAL_SERVER_ERROR(MESSAGES.SOMETHING_WENT_WRONG);
                 }
                 response.status(err.statusCode).json(err);
             });

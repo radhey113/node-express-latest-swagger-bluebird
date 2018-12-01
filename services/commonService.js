@@ -34,8 +34,7 @@ commonService.saveData = async (Model, dataToSave) => {
  * @returns {Promise<*>}
  */
 commonService.getOneDoc = async (Model, Criteria, Projection, Options) => {
-    const requiredData = await Model.findOne(Criteria, Projection, Options);
-    return requiredData;
+    return await Model.findOne(Criteria, Projection, Options);
 };
 
 /**
@@ -74,8 +73,7 @@ commonService.getManyPopulatedDoc = async (Model, Criteria, Projection, Options,
  * @returns {Promise<*>}
  */
 commonService.removeOne = async (Model, Criteria) => {
-    const removedData = await Model.findOneAndRemove(Criteria);
-    return removedData;
+    return await Model.findOneAndRemove(Criteria);
 };
 
 /**
@@ -87,8 +85,7 @@ commonService.removeOne = async (Model, Criteria) => {
  * @returns {Promise<*>}
  */
 commonService.updateData = async (Model, Criteria, DataToUpdate, Options) => {
-    const updatedData = await Model.findOneAndUpdate(Criteria, DataToUpdate, Options);
-    return updatedData;
+    return await Model.findOneAndUpdate(Criteria, DataToUpdate, Options);
 };
 
 /**

@@ -14,7 +14,7 @@ const swaggerJson = {
     },
     "paths": {},
     "definitions": {},
-    "host": "localhost:3000",
+    "host": "localhost:2201",
     "basePath": "/",
     "schemes": [
         "http",

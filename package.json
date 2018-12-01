@@ -1,11 +1,11 @@
 {
-  "name": "Demo with express and Latest Swagger",
+  "name": "demo_with_new_swagger",
   "version": "1.0.0",
   "description": "Demo with new swagger",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",

@@ -56,7 +56,8 @@ let startNodeserver = () => {
     })
 };
 
-let  startServer = async() =>{
+/** connect database **/ 
+let connectDb = async() =>{
     await Mongoose.connect(CONFIG.SERVER_CONFIG.MONGODB.URL, { useNewUrlParser: true, useCreateIndex: true });
     console.log('Mongo connected at ', CONFIG.SERVER_CONFIG.MONGODB.URL);
     await routeUtils.route(app,routes);
@@ -65,7 +66,7 @@ let  startServer = async() =>{
 
 
 module.exports = () => {
-    startServer()
+    connectDb()
     .then(()=>{
         console.log(`Node server running on ${CONFIG.SERVER_CONFIG.HOST}:${CONFIG.SERVER_CONFIG.PORT}`);
     }).catch((err) => {

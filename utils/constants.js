@@ -1,11 +1,11 @@
 'use strict';
 
-
 let constants = {};
 
 constants.SERVER = {
   ADMINPASSWORD: process.env.ADMIN_PASSWORD,
-  PROJECT_NAME: `LePasseTrappe Backend.`,
+  PROJECT_NAME: `Demo_express`,
+  DESCRIPTION: `Demo expres with new version of swagger documentation. We have used mongoose with bluebird for handling async behaviours`,
   JWT_SECRET: `fasdkfjklandfkdsfjladsfodfafjalfadsfkads`,
   BCRYPT_SALT: 10,
   ARRAY_FIRST_INDEX: 0,
@@ -54,6 +54,9 @@ constants.MESSAGES = {
   LOGGED_IN_SUCCESSFULLY: 'Logged in successfully.',
   USER_ALREADY_EXIST:'User already exists with same name/email.',
   PASSWORD_REQUIRED:'Password required.',
+  USER_FETCHED_SUCCESSFULLY: 'Success.',
+  USER_DELETED: 'User data is successfully deleted.',
+  USER_UPDATED: 'User data is successfully updated.',
   EMAIL_REQUIRED:'Email required.',
 
 };
@@ -62,29 +65,16 @@ constants.FB_GRAPH_API = 'https://graph.facebook.com/me?fields=email,gender,name
 
 constants.EXISTING_SINGLE_CATEGORY_ID = '5b28e5a73235d6291cb036ab';
 
-constants.GAME_TYPES = {
-  COIN_PUSHER: 1,
-  ARCHERY_STRIKE: 2,
-  JELLY_GARDEN: 3,
-  TWISTY_TUNNEL: 4,
-  TRASH_CAT: 5
-};
-
 constants.EMAIL_TYPES = {
   FORGOT_PASSWORD: 1
 };
 
 constants.SENDINBLUE = {
-  EMAILFORSENDINGEMAIL: ['<registere-email>', 'From'],  // has to be changed when provided by client.
+  EMAILFORSENDINGEMAIL: ['<registere-email>', 'From'], 
 };
 
 constants.SUBJECT_OF_EMAILS = {
   FORGOT_PASSWORD: 'Forgot password'
-};
-
-constants.BANK_TRANSACTION_TYPES = {
-  DEPOSIT: 1,
-  WITHDRAW: 2
 };
 
 /**

@@ -10,7 +10,7 @@ let SERVER_CONFIG = {
         PORT        : 27017,
         NAME        : "mongodb",
         CONNECTOR   : "mongodb",
-        URL         : process.env.DB_URL || "mongodb://127.0.0.1/le_passe_Trappe_dev",
+        URL         : process.env.DB_URL || "mongodb://127.0.0.1/demo_dev",
         DATABASE    : "demo_dev",
         USER        : "",
         PASSWORD    : "",
@@ -32,7 +32,7 @@ if(process.env.NODE_ENV === "development"){
 }
 else if( process.env.NODE_ENV === "production"){
 
-    SERVER_CONFIG.MONGODB.URL            =   process.env.DB_URL || "mongodb://127.0.0.1:27017/le_passe_Trappe_prod";
+    SERVER_CONFIG.MONGODB.URL            =   process.env.DB_URL || "mongodb://127.0.0.1:27017/demo";
     SERVER_CONFIG.MONGODB.DATABASE       =   "le_passe_Trappe_prod";
     SERVER_CONFIG.MONGODB.USER           =   "user";
     SERVER_CONFIG.MONGODB.PASSWORD       =   "password";
