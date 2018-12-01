@@ -5,6 +5,8 @@ let constants = {};
 constants.SERVER = {
   ADMINPASSWORD: process.env.ADMIN_PASSWORD,
   PROJECT_NAME: `Demo_express`,
+  API_KEY: `jun6eaqrOPaksZL1PIkjtQoe`,
+  API_SECRETE: `alqrOdasfdaddafasdfafae`,
   DESCRIPTION: `Demo expres with new version of swagger documentation. We have used mongoose with bluebird for handling async behaviours`,
   JWT_SECRET: `fasdkfjklandfkdsfjladsfodfafjalfadsfkads`,
   BCRYPT_SALT: 10,
