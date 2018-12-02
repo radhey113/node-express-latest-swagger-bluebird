@@ -2,27 +2,20 @@
 /************* Modules ***********/
 const MONGOOSE = require("mongoose");
 const Schema = MONGOOSE.Schema;
-
 const { convertKeysValueToArray } = require('../utils/utils');
 const { LOGIN_TYPE, SERVER } = require('../utils/constants');
 
 const loginType = convertKeysValueToArray(LOGIN_TYPE);
+console.log(loginType);
+
 
 /**************************************************
  ************* User Model or collection ***********
  **************************************************/
 const userSchema = new Schema({
-    name        : { type: String, required: true, unique: true, index: true, sparse: true },
-    email       : { type: String, required: true, unique: true, index: true, sparse: true },
-
-    password    : { type: String },
+    userId      : { type: Schema.Types.ObjectId, ref: 'user' },
+    loginType   : [{ type: Number, enum: loginType, default: loginType[SERVER.ARRAY_FIRST_INDEX] }],
     createdAt   : { type: Date, default: Date.now },
-
-    fbId        : { type: String, default: '' },
-    signUpType  : [{ type: Number, enum: loginType, default: loginType[SERVER.ARRAY_FIRST_INDEX] }],
-
-    isFb        : { type: Boolean, default: false },
-    isGuest     : { type: Boolean, default: false },
     updatedAt   : { type: Date, default: Date.now }
 });
 

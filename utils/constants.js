@@ -50,6 +50,7 @@ constants.MESSAGES = {
   INVALID_PASSWORD: 'Invalid password',
   INVALID_CREDENTIALS: 'Invalid credentials.',
   EMAIL_ALREADY_EXISTS: 'Email already registered! Please enter another email.',
+  NAME_ALREADY_EXISTS: 'Name already registered! Please enter another name.',
   FILE_FORMAT_NOT_SUPPORTED: 'File format not supported.',
   REGISTERED_SUCCESSFULLY: 'Registered successfully.',
   SOMETHING_WENT_WRONG: 'Something went wrong.',

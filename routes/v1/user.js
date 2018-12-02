@@ -8,7 +8,7 @@ const { user } = require('../../utils/responseMsg');
 const { authorization, convertErrorIntoReadableForm } = require('../../utils/utils');
 const { registerUser, getUser, removeUser, updateUser } = require('../../controllers').v1.userController;
 
-const signInType = convertKeysValueToArray(LOGIN_TYPE);
+const loginType = convertKeysValueToArray(LOGIN_TYPE);
 
 let Routes = [];
 Routes = [
@@ -19,7 +19,10 @@ Routes = [
 			body: {
                 name: Joi.string().optional().allow(``).description(`User unique name.`).label(`Name`),
                 email: Joi.string().optional().allow(``).description(`User\'s email id.`).label(`Email`),
-                password: Joi.string().optional().allow(``).description(`User password.`).label(`Password`),
+				password: Joi.string().optional().allow(``).description(`User password.`).label(`Password`),
+				fbId: Joi.string().optional().allow(``).description(`User unique name.`).label(`fbId`),
+				isGuest: Joi.boolean().required().allow(false).description(`User is Guest or Not`).label(`Is-Guest`),
+				signUpType: Joi.number().required().valid(loginType).description(`Normal: 1, FB: 2, Guest: 3`)
 			},
 			group: `User`,
 			description: `Route to register an user to the database.`,

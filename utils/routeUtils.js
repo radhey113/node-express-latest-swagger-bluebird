@@ -74,10 +74,11 @@ let getHandlerMethod = (handler) => {
         };
         handler(body)
             .then((result) => {
+                console.log(result);
                 response.status(result.statusCode).json(result);
             })
             .catch((err) => {
-                console.log(err);
+                console.log("sdflkjadjlfaljsdkadskljjkasf: ", err);
                 if (!err.statusCode && !err.status) {
                     err = RESPONSEMESSAGES.ERROR.INTERNAL_SERVER_ERROR(MESSAGES.SOMETHING_WENT_WRONG);
                 }

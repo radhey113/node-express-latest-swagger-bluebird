@@ -1,7 +1,7 @@
 
 'use strict';
 
-let { SERVER } = require('./constants');
+let { SERVER, LOGIN_TYPE } = require('./constants');
 const MONGOOSE = require('mongoose');
 const BCRYPT = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -46,7 +46,7 @@ let convertIdToMongooseId = (stringId) => {
 
 
 /** create jsonwebtoken **/
-let createToken = (userId) => {
+let generateJWTToken = (userId) => {
   let jwtToken = jwt.sign({
 		id: userId,
 		timestamp: Date.now
@@ -109,7 +109,7 @@ module.exports = {
   encryptPswrd: encryptPswrd,
   decryptPswrd: decryptPswrd,
   convertIdToMongooseId: convertIdToMongooseId,
-  createToken: createToken,
+  generateJWTToken: generateJWTToken,
   messageLogs: messageLogs,
   getEnumArray:getEnumArray,
   convertErrorIntoReadableForm:convertErrorIntoReadableForm,

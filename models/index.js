@@ -5,6 +5,6 @@
  *********** Model or collection Manager **********
  **************************************************/
 module.exports = {
-    userModel: require('./user'),
+    userInfo: require('./user'),
 };
 
