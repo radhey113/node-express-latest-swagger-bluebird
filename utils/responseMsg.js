@@ -21,36 +21,39 @@ responseMsg.user = {
                           }
                         }
                   `,
-    getUserData: `
-                        {
-                          "statusCode": 200,
-                          "message": "Success.",
-                          "type": "Default",
-                          "data": {
-                            "_id": "string",
-                            "name": "string",
-                            "email": "string",
-                            "createdAt": "string",
-                            "updatedAt": "string"
-                          }
-                        }`
-                        ,              
-    deleteUserData: `
-                        {
-                          "statusCode": 200,
-                          "message": "User data is successfully deleted.",
-                          "type": "Default",
-                          "data": {}
-                        }
-                    `,
-    updateUserData: `
-                        {
-                          "statusCode": 200,
-                          "message": "User data is successfully updated.",
-                          "type": "Default",
-                          "data": {}
-                        }
-    `,                
+    signIn: `
+                    {
+                      "statusCode": 200,
+                      "message": "Logged in successfully.",
+                      "type": "Default",
+                      "data": {
+                        "_id": "string",
+                        "role": "string",
+                        "name": "string",
+                        "email": "string",
+                        "fbId": "string",
+                        "createdAt": "string",
+                        "updatedAt": "string",
+                        "accessToken": "string"
+                      }
+                    }
+                `,
+    forget_password: `
+                    {
+                       "statusCode": 200,
+                       "message": "Your One Time Password has been sent to your registered email address.",
+                       "type": "Default",
+                       "data": {}
+                    }
+    `,
+    reset_password:`
+                    {
+                        "statusCode": 200,
+                        "message": "Your password has been successfully changed.",
+                        "type": "Default",
+                        "data": {}
+                    }
+                    `
 };
 
 module.exports = responseMsg;

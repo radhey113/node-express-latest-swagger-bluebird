@@ -18,7 +18,7 @@ let routeUtils = {};
 routeUtils.route = async (app, routes = []) => {
     routes.forEach(route => {
         let middlewares = [getValidatorMiddleware(route)];
-        if (route.auth === AVAILABLE_AUTHS.SUPER_ADMIN) {
+        if (route.auth === AVAILABLE_AUTHS.USER) {
             middlewares.push(authService.superAdminValidate());
         }
         app.route(route.path)[route.method.toLowerCase()](...middlewares, getHandlerMethod(route.handler));
@@ -78,7 +78,6 @@ let getHandlerMethod = (handler) => {
                 response.status(result.statusCode).json(result);
             })
             .catch((err) => {
-                console.log("sdflkjadjlfaljsdkadskljjkasf: ", err);
                 if (!err.statusCode && !err.status) {
                     err = RESPONSEMESSAGES.ERROR.INTERNAL_SERVER_ERROR(MESSAGES.SOMETHING_WENT_WRONG);
                 }

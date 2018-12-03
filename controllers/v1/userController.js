@@ -1,37 +1,23 @@
 "use strict";
 
-const { 
-    encryptPswrd, decryptPswrd, createToken 
+const {
+    encryptPswrd, decryptPswrd,
+    generateJWTToken, sendEmailNodeMailer,
+    generateOTP, addTimeToDate
 } = require('../../utils/utils');
+const { RESPONSEMESSAGES, MESSAGES, SERVER, EMAIL_TYPES, OTP_EXPIRY  } = require("../../utils/constants");
 
-const { 
-    RESPONSEMESSAGES, MESSAGES
-} = require("../../utils/constants");
-
-const { 
-    userInfo 
-} = require('../../models');
-
-const { 
-    saveData, getOneDoc, updateData, removeOne, 
-} = require('../../services/commonService');
-
-
-const { 
-    signUp
-} = require('../../services/signUpService');
-
+const { userModel, verificationModel } = require('../../models');
+const { saveData, getOneDoc, updateData, removeOne, updateAccessToken } = require('../../services/commonService');
+const { signUp } = require('../../services/signUpService');
 
 /**************************************************
  ***** User controller for user business logic ****
  **************************************************/
 let userController = {};
 
-/**
- * register an user to the database
- * @param {*} body 
- */
-userController.registerUser = async (body) => {
+/**function to register an user to the system. **/
+userController.registerUser = (body) => {
     return new Promise((resolve, reject) => {
         signUp(body).then(user => {
             delete user.signUpType;
@@ -42,60 +28,146 @@ userController.registerUser = async (body) => {
 
             reject(error);
         })
-    
-    })
-
-    // body.password = encryptPswrd(body.password)
-    // let requiredUser = await saveData(userModel, body);
-    // if (requiredUser) {
-    //     return Object.assign(RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.REGISTERED_SUCCESSFULLY, requiredUser));
-    // }
-    
+    });
 };
 
 /**
- * get user data by id
- * @param {*} requestBody 
+ * function to fetch an user from the system by its id.
  */
-userController.getUser = async (requestBody) => {
-    let Criteria = { _id: requestBody.userId }, Projection = { __v: 0 }, Options = { lean: true };
-    let requiredUser = await getOneDoc(userInfo, Criteria, Projection, Options);
-    if (requiredUser) {
-        delete requiredUser.password;
-        return Object.assign(RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.USER_FETCHED_SUCCESSFULLY, requiredUser));
+userController.signIn = async (body) => {
+    let Criteria = { email: body.email }, updatedData,
+        Projection = { __v: 0 }, Options = { lean: true }, tokenManagerArr = [];
+
+    let user = await getOneDoc(userModel, Criteria, Projection, Options);
+    if(!user) {
+        throw RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.INVALID_CREDENTIALS);
     }
-    return RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.NOT_FOUND);
+
+    let isMatched = await decryptPswrd(body.password, user.password);
+
+    if(isMatched){
+        let accessToken = await generateJWTToken(user._id);
+        tokenManagerArr.push({
+             accessToken: accessToken,
+             deviceToken: body.deviceToken
+        });
+
+        /** update user with token **/
+        updatedData = await updateData(userModel, { _id: user._id }, { $set: { tokenManager: tokenManagerArr } }, { lean: true, new: true });
+        delete updatedData.password;
+        delete updatedData.tokenManager;
+        delete updatedData.__v;
+        delete updatedData.signUpType;
+
+        return RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.LOGGED_IN_SUCCESSFULLY, { ...updatedData, accessToken });
+
+    }else {
+        throw RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.INVALID_CREDENTIALS);
+    }
 };
 
+userController.forgotPassword = async (body) => {
+    return new Promise(async (resolve, reject) => {
+
+        let user = await getOneDoc(userModel, { email: body.email }, {  __v: 0, password: 0 }, { lean: true });
+
+        if(!user) {
+           return reject(RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.NOT_FOUND));
+        }
+        let OTP = generateOTP();
+
+        let currentDate = new Date();
+        let expiryTime = await addTimeToDate(new Date(), OTP_EXPIRY.TIME_TO_ADD, OTP_EXPIRY.PREFIX);
+
+        const verificationData = await updateData(
+            verificationModel,
+            { userId: user._id },
+            { $set: { OTP: OTP, createdAt: new Date(), type: EMAIL_TYPES.FORGOT_PASSWORD, expireAt: expiryTime}},
+            { new: true, lean: true, upsert: true }
+        );
+
+        user.OTP = verificationData.OTP;
+
+        await sendEmailNodeMailer(user, EMAIL_TYPES.FORGOT_PASSWORD);
+
+        return resolve(Object.assign(
+            RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.PASSWORD_RESET_OTP),
+            { }
+        ));
+    })
+};
+
+
+
 /**
- * remove user document 
- * @param {*} requestBody 
+ * Change user password with OTP
+ * @param request
+ * @returns {Promise<(*|{statusCode, msg, status, type}) & {}>}
+ */
+userController.changePassword_OTP = async (body) => {
+
+    let verificationDocId;
+
+    /** Check user is exist or not  **/
+    const user = await getOneDoc( userModel,{ email: body.email }, { _id: 1, email: 1}, { lean: true });
+
+    if(!user) {
+        throw RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.NOT_FOUND);
+    }
+
+    /** Check OTP is available or not **/
+    const OTP_DOC = await getOneDoc(
+        verificationModel,
+        { userId: user._id, OTP: body.otp, type: EMAIL_TYPES.FORGOT_PASSWORD },
+        { __v: 0 },
+        { lean: true }
+        );
+
+    if(!OTP_DOC){
+        throw RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.INVALID_OTP);
+    }
+    verificationDocId = OTP_DOC._id;
+
+    /** Reset user password again **/
+    let password = await encryptPswrd(body.password);
+    let updated = await updateData( userModel, { _id: user._id }, { $set: { password: password } }, { lean: true });
+
+    if(updated){
+
+        /** Remove OTP Doc after successfully changing password **/
+        await removeOne(verificationModel, { _id: verificationDocId });
+        return Object.assign(
+            RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.PASSWORD_CHANGED)
+        )
+    } else{
+        throw RESPONSEMESSAGES.ERROR.FAILED_REQUEST(MESSAGES.PASSWORD_RESET_FAILED)
+    }
+};
+
+
+
+/**
+ * function to remove an user from the system.
  */
 userController.removeUser = async (requestBody) => {
-    let Criteria = { _id: requestBody.userId };
-    let removedUser = await removeOne(userInfo, Criteria);
-    console.log('remove dat: ', removedUser);
+    let Criteria = { _id: requestBody.id }, Projection = { __v: 0 }, Options = { lean: true };
+    let removedUser = await removeOne(userModel, Criteria, Projection, Options);
     if (removedUser) {
-        return Object.assign(RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.USER_DELETED));
+        return Object.assign(RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.USER_REMOVED_SUCCESSFULLY));
     }
     return RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.NOT_FOUND);
 };
 
 /**
- * update user data by user id
- * @param {*} requestBody 
+ * function to update an user to the system.
  */
 userController.updateUser = async (requestBody) => {
-    return new Promise(async (resolve, reject)=> {
-        let Criteria = { _id: requestBody.userId }, Options = {  lean: true, new: true };
-        delete requestBody.userId;
-
-        const updatedUser = await updateData(userInfo, Criteria, { $set: requestBody }, Options );
-        if( updateData ) 
-        delete updateData.password;
-           return resolve(Object.assign(RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.USER_UPDATED, updatedUser)));    
-        reject(RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.NOT_FOUND));
-    });
+    let Criteria = { _id: requestBody.id }, Options = { lean: true };
+    let updatedUser = await updateData(userModel, Criteria, requestBody, Options );
+    if(updatedUser){
+        return Object.assign(RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.USER_UPDATED_SUCCESSFULLY), { user: updatedUser });
+    }
+    return RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.NOT_FOUND);
 };
 
 /* export userControllers */

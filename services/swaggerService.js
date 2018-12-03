@@ -144,8 +144,7 @@ class Swagger {
                 })
             });
         }
-        
-        
+
         if (this.paths && this.paths[transformPath]) {
             this.paths[transformPath] = {
                 ...this.paths[transformPath],

@@ -1,18 +1,19 @@
 'use strict';
 
+
 let constants = {};
 
 constants.SERVER = {
   ADMINPASSWORD: process.env.ADMIN_PASSWORD,
-  PROJECT_NAME: `Demo_express`,
-  API_KEY: `jun6eaqrOPaksZL1PIkjtQoe`,
-  API_SECRETE: `alqrOdasfdaddafasdfafae`,
-  DESCRIPTION: `Demo expres with new version of swagger documentation. We have used mongoose with bluebird for handling async behaviours`,
+  PROJECT_NAME: `Demo Backend.`,
   JWT_SECRET: `fasdkfjklandfkdsfjladsfodfafjalfadsfkads`,
   BCRYPT_SALT: 10,
   ARRAY_FIRST_INDEX: 0,
   NOT_FOUND_INDEX: -1,
-  GUEST_PREFIX: 'guest_'
+  GUEST_PREFIX: 'guest_',
+  NODEMAILER_CODE: 'Gmail',
+  NODEMAILER_USER: '<gmail acccount>',
+  NODEMAILER_PASSWORD: '<password>'
 };
 
 constants.statusCode = {
@@ -37,7 +38,12 @@ constants.LOGIN_TYPE = {
 constants.THIRD_PARTY_LOGIN = [2];
 
 constants.AVAILABLE_AUTHS = {
-  SUPER_ADMIN: 'USER'
+  USER: 'USER'
+};
+
+constants.OTP_EXPIRY = {
+    TIME_TO_ADD: 5,
+    PREFIX: 'm'
 };
 
 constants.EMAILPATTERN = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -57,27 +63,41 @@ constants.MESSAGES = {
   LOGGED_IN_SUCCESSFULLY: 'Logged in successfully.',
   USER_ALREADY_EXIST:'User already exists with same name/email.',
   PASSWORD_REQUIRED:'Password required.',
-  USER_FETCHED_SUCCESSFULLY: 'Success.',
-  USER_DELETED: 'User data is successfully deleted.',
-  USER_UPDATED: 'User data is successfully updated.',
   EMAIL_REQUIRED:'Email required.',
-
+  INVALID_OTP: 'OTP invalid',
+  NAME_REQUIRED:'Name required.',
+  PASSWORD_RESET_OTP: 'Your One Time Password has been sent to your registered email address.',
+  PASSWORD_CHANGED: 'Your password has been successfully changed.',
+  PASSWORD_RESET_FAILED: 'Your password reset request is failed.',
 };
 
 constants.FB_GRAPH_API = 'https://graph.facebook.com/me?fields=email,gender,name,picture.type(large),birthday,age_range&access_token=';
 
 constants.EXISTING_SINGLE_CATEGORY_ID = '5b28e5a73235d6291cb036ab';
 
+constants.GAME_TYPES = {
+  COIN_PUSHER: 1,
+  ARCHERY_STRIKE: 2,
+  JELLY_GARDEN: 3,
+  TWISTY_TUNNEL: 4,
+  TRASH_CAT: 5
+};
+
 constants.EMAIL_TYPES = {
   FORGOT_PASSWORD: 1
 };
 
 constants.SENDINBLUE = {
-  EMAILFORSENDINGEMAIL: ['<registere-email>', 'From'], 
+  EMAILFORSENDINGEMAIL: ['<registere-email>', 'From'],  // has to be changed when provided by client.
 };
 
 constants.SUBJECT_OF_EMAILS = {
   FORGOT_PASSWORD: 'Forgot password'
+};
+
+constants.BANK_TRANSACTION_TYPES = {
+  DEPOSIT: 1,
+  WITHDRAW: 2
 };
 
 /**
@@ -95,6 +115,16 @@ constants.RESPONSEMESSAGES = {
         message: msg,
         type: 'DATA_NOT_FOUND',
       };
+    },
+    FAILED_REQUEST: (msg) => {
+        if (!msg) {
+            msg = '';
+        }
+        return {
+            statusCode: 400,
+            message: msg,
+            type: 'FAILED',
+        };
     },
     BAD_REQUEST: (msg, statusCode) => {
       if (!msg) {
@@ -171,6 +201,12 @@ constants.RESPONSEMESSAGES = {
       }
   }
 };
+
+
+constants.EMAIL_TEMPLATE = {
+    FORGET_PSWRD: "<!DOCTYPE html><html lang=en><head> <meta charset=utf-8> <meta name=viewport content=width=device-width, initial-scale=1.0> <meta name=description content=> <meta name=author content=> <title>Le Passe Trappe</title> <link href=css/font-awesome.min.css rel=stylesheet> <style>p{margin: 0px;}h3{margin: 0px;}.wrapper{padding: 20px; background-color: #F0F0F0;}</style></head><body> <div class=wrapper> <p id=userName>Hi {{name}},</p><p id=resetCode>OTP for reset password: <b>{{code}}</b></p><p>&nbsp;</p><p>If you need assistance, please email our customer service department at <a href=mailto:customerservice@demo.com>customerservice@demo.com</a> or you can refer to our website : <a href=demo.com>demo.com</a></p><p>&nbsp;</p><p>Thanks again for choosing our App, we hope it makes a big difference in your lives ☺</p><p>&nbsp;</p><p>Sincerely,</p><p>&nbsp;</p><p>Founder Name</p><p>Founder</p><a href=demo.com>demo.com</a> <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p></div></body></html>"
+};
+
 
 constants.swaggerDefaultResponseMessages = [
   { code: 200, message: 'OK' },

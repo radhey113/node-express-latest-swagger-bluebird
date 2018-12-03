@@ -1,11 +1,16 @@
 
 'use strict';
 
-let { SERVER, LOGIN_TYPE } = require('./constants');
+let { SERVER, MESSAGES, SUBJECT_OF_EMAILS, EMAIL_TYPES, EMAIL_TEMPLATE } = require('./constants');
 const MONGOOSE = require('mongoose');
 const BCRYPT = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
+
+const nodemailer = require('nodemailer');
+const handleBar = require('handlebars');
+const moment = require('moment');
+
 let saltRounds = SERVER.BCRYPT_SALT;
 
 /**
@@ -102,6 +107,107 @@ const convertKeysValueToArray = Obj => {
     })
 };
 
+/**
+ * Generate 6 digit OTP
+ * @returns {number}
+ */
+const generateOTP = () => {
+    const OTP = Math.floor(100000 + Math.random() * 900000);
+    return OTP;
+};
+
+
+/**
+ * Send Email from node mailer
+ * @param email
+ */
+const sendEmailNodeMailer = (userObject, type) => {
+    return new Promise((resolve, reject) => {
+
+        /** Generate test SMTP service account from ethereal.email
+         Only needed if you don't have a real mail account for testing **/
+        let transporter = nodemailer.createTransport({
+            service: SERVER.NODEMAILER_CODE,
+            auth: {
+                user: SERVER.NODEMAILER_USER,
+                pass: SERVER.NODEMAILER_PASSWORD
+            }
+        });
+
+        /** setup email data with unicode symbols **/
+        const mailData = emailTypes(userObject, type), email = userObject.email;
+        let template = handleBar.compile(mailData.template);
+
+
+        let result = template(mailData.data);
+        const subject = mailData.Subject;
+
+        let mailOptions = {
+            from: '"demo" <contact@demo.com>', // sender address
+            to: email, // list of receivers
+            subject: subject, // Subject line
+            // text: 'Hello world?', // plaΩin text body
+            html: result // html body
+        };
+
+        /** send mail with defined transport object **/
+        transporter.sendMail(mailOptions, (error, info) => {
+
+            if (error) {
+                console.log('Message error: ', error);
+                reject(error);
+            }
+            console.log('Message sent: %s', info.messageId);
+            /** Preview only available when sending through an Ethereal account **/
+
+            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+            /** Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+             Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou... **/
+
+            resolve(null);
+        });
+    });
+};
+
+
+/**
+ * Check mail type
+ * @param userObject
+ * @param type
+ * @returns {{Subject: string, data: {}, template: string}}
+ */
+const emailTypes = (userObject, type) => {
+    let EmailStatus = {
+        Subject: '',
+        data: {},
+        template: ''
+    };
+    switch (type){
+
+        case EMAIL_TYPES.FORGOT_PASSWORD:
+            // let link = `${constants.SERVER.VERIFICATION_URL}?email=${userObject.email}&type=${constants.VERIFICATION_TYPE.EMAIL}&otp=${userObject.otp}`;
+            EmailStatus['Subject'] = SUBJECT_OF_EMAILS.FORGOT_PASSWORD;
+            EmailStatus.template = EMAIL_TEMPLATE.FORGET_PSWRD;
+            break;
+
+        default:
+            EmailStatus['Subject'] = 'Welcome Email!';
+            break;
+
+    }
+    EmailStatus.data['name'] = userObject.name;
+    EmailStatus.data['code'] = userObject.OTP;
+    return EmailStatus;
+};
+
+/**
+ * Add some time (minutes, hours, or second)
+ * @param date
+ * @param timetoadd
+ */
+const addTimeToDate = (date, timetoadd, timePrefix) => {
+    return moment(date).add(timetoadd, timePrefix).toDate();
+};
 
 
 /*exporting all object from here*/
@@ -114,5 +220,9 @@ module.exports = {
   getEnumArray:getEnumArray,
   convertErrorIntoReadableForm:convertErrorIntoReadableForm,
   authorization: authorization,
-  convertKeysValueToArray: convertKeysValueToArray
+  convertKeysValueToArray: convertKeysValueToArray,
+  emailTypes: emailTypes,
+  sendEmailNodeMailer: sendEmailNodeMailer,
+  generateOTP: generateOTP,
+  addTimeToDate: addTimeToDate
 };
