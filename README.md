@@ -10,7 +10,7 @@ In this demo we will use swagger routes with middlewares. It makes our API docum
 
 `NodeJS v8+`
 + *`Ref:`* [Learn Node](http://nodejs.org)
-+ Framework: [Learn Koa](https://expressjs.com/)
++ Framework: [Learn Express](https://expressjs.com/)
 
 ## Run Locally with Node
 + Clone the project:
@@ -19,7 +19,7 @@ In this demo we will use swagger routes with middlewares. It makes our API docum
 + Execute command   `npm install`
 + After that Run Command `npm start`
 + Open `http://localhost:2201` to check that your server is running or not.
-+ To check the documentation Kindly follow the: `http://localhost:4001/document`
++ To check the documentation Kindly follow the: `http://localhost:2201/document`
 
 ![demo](./utils/assets/demo1.png)
 
