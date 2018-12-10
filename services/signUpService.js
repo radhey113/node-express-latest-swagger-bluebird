@@ -7,7 +7,7 @@ const { generateJWTToken, encryptPswrd } =  require('../utils/utils');
 const { userModel } = require('../models');
 const { saveData, getOneDoc, updateData } = require('./commonService');
 
-
+const NOT = SERVER.NOT;
 /***
  * Sign up with normal and facebook both
  * @param body
@@ -19,7 +19,7 @@ signupService.signUp = async (body) => {
 
             let type = body.signUpType, returnData;
             let criteria = { $or: [ { email: body.email }, { name: body.name } ] },
-                userDataExist = null, projection = { __v: 0 }, options = { lean: true }, tokenManager= [], newUserInfo, error;
+                userDataExist = null, projection = { __v: NOT }, options = { lean: true }, tokenManager= [], newUserInfo, error;
 
             switch(type) {
 

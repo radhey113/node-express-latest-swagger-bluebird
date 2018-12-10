@@ -11,6 +11,8 @@ const { userModel, verificationModel } = require('../../models');
 const { saveData, getOneDoc, updateData, removeOne, updateAccessToken } = require('../../services/commonService');
 const { signUp } = require('../../services/signUpService');
 
+const YES = SERVER.YES, NOT = SERVER.NOT;
+
 /**************************************************
  ***** User controller for user business logic ****
  **************************************************/
@@ -36,7 +38,7 @@ userController.registerUser = (body) => {
  */
 userController.signIn = async (body) => {
     let Criteria = { email: body.email }, updatedData,
-        Projection = { __v: 0 }, Options = { lean: true }, tokenManagerArr = [];
+        Projection = { __v: NOT }, Options = { lean: true }, tokenManagerArr = [];
 
     let user = await getOneDoc(userModel, Criteria, Projection, Options);
     if(!user) {
@@ -69,7 +71,7 @@ userController.signIn = async (body) => {
 userController.forgotPassword = async (body) => {
     return new Promise(async (resolve, reject) => {
 
-        let user = await getOneDoc(userModel, { email: body.email }, {  __v: 0, password: 0 }, { lean: true });
+        let user = await getOneDoc(userModel, { email: body.email }, {  __v: NOT, password: NOT }, { lean: true });
 
         if(!user) {
            return reject(RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.NOT_FOUND));
@@ -109,7 +111,7 @@ userController.changePassword_OTP = async (body) => {
     let verificationDocId;
 
     /** Check user is exist or not  **/
-    const user = await getOneDoc( userModel,{ email: body.email }, { _id: 1, email: 1}, { lean: true });
+    const user = await getOneDoc( userModel,{ email: body.email }, { _id: YES, email: YES}, { lean: true });
 
     if(!user) {
         throw RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.NOT_FOUND);
@@ -119,7 +121,7 @@ userController.changePassword_OTP = async (body) => {
     const OTP_DOC = await getOneDoc(
         verificationModel,
         { userId: user._id, OTP: body.otp, type: EMAIL_TYPES.FORGOT_PASSWORD },
-        { __v: 0 },
+        { __v: YES },
         { lean: true }
         );
 
@@ -150,7 +152,7 @@ userController.changePassword_OTP = async (body) => {
  * function to remove an user from the system.
  */
 userController.removeUser = async (requestBody) => {
-    let Criteria = { _id: requestBody.id }, Projection = { __v: 0 }, Options = { lean: true };
+    let Criteria = { _id: requestBody.id }, Projection = { __v: NOT }, Options = { lean: true };
     let removedUser = await removeOne(userModel, Criteria, Projection, Options);
     if (removedUser) {
         return Object.assign(RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.USER_REMOVED_SUCCESSFULLY));

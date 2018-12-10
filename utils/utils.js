@@ -62,7 +62,7 @@ let generateJWTToken = (userId) => {
 /** Convert error to readable form **/
 let convertErrorIntoReadableForm = (error) => {
   let errorMessage = '';
-  if (error.message.indexOf("[") > -1) {
+  if (error.message.indexOf("[") > SERVER.NOT_FOUND_INDEX) {
     errorMessage = error.message.substr(error.message.indexOf("["));
   } else {
     errorMessage = error.message;

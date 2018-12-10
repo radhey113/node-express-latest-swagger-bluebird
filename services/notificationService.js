@@ -64,11 +64,11 @@ notificationService.oneToOne = async (deviceToken, data) => {
 const sendNotification = async (msg) => {
     fcm.send(message, function(err, result){
         if (err) {
-            console.log("Something has gone wrong!",err);
-            callback(null);
+            console.log(`Something has gone wrong! ${JSON.stringify(err)}`);
+            return false;
         } else {
-            console.log("Successfully sent with response: ", result);
-            callback(null,result);
+            console.log(`Successfully sent with response: ${JSON.stringify(result)}`);
+            return true;
         }
     });
 };

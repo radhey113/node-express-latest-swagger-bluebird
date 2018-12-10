@@ -14,7 +14,11 @@ constants.SERVER = {
   GUEST_PREFIX: 'guest_',
   NODEMAILER_CODE: 'Gmail',
   NODEMAILER_USER: '<gmail acccount>',
-  NODEMAILER_PASSWORD: '<password>'
+  NODEMAILER_PASSWORD: '<password>',
+
+  /** Projection keys **/ 
+  YES: 1,
+  NOT: 0
 };
 
 constants.statusCode = {

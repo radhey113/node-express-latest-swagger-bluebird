@@ -1,10 +1,12 @@
 const jwt = require('jsonwebtoken');
 
-const CONSTANTS = require('../utils/constants');
+const {SERVER, MESSAGES, RESPONSEMESSAGES } = require('../utils/constants');
 
 const MODELS = require('../models');
 
 let authService = {};
+
+const NOT = SERVER.NOT;
 
 /**
  * function to authenticate superadmin.
@@ -15,10 +17,10 @@ authService.superAdminValidate = () => {
             if (isAuthorized) {
                 return next();
             }
-            let responseObject = CONSTANTS.RESPONSEMESSAGES.ERROR.UNAUTHORIZED(CONSTANTS.MESSAGES.UNAUTHORIZED);
+            let responseObject = RESPONSEMESSAGES.ERROR.UNAUTHORIZED(MESSAGES.UNAUTHORIZED);
             return response.status(responseObject.statusCode).json(responseObject);
         }).catch((err) => {
-            let responseObject = CONSTANTS.RESPONSEMESSAGES.ERROR.UNAUTHORIZED(CONSTANTS.MESSAGES.UNAUTHORIZED);
+            let responseObject = RESPONSEMESSAGES.ERROR.UNAUTHORIZED(MESSAGES.UNAUTHORIZED);
             return response.status(responseObject.statusCode).json(responseObject);
         });
     };
@@ -30,9 +32,9 @@ authService.superAdminValidate = () => {
  */
 let validateSuperAdmin = async (request) => {
     try {
-        let authorizedAdmin = jwt.verify(request.headers.authorization, CONSTANTS.jwt.privatekey);
+        let authorizedAdmin = jwt.verify(request.headers.authorization, SERVER.JWT_SECRET);
         if (authorizedAdmin.id) {
-            let adminDetails = await MODELS.adminModel.findOne({ _id: authorizedAdmin.id }, { __v: 0, password: 0 });
+            let adminDetails = await MODELS.adminModel.findOne({ _id: authorizedAdmin.id }, { __v: NOT, password: NOT });
             if (adminDetails) {
                 request.user = adminDetails;
                 return true;
