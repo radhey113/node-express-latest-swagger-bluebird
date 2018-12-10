@@ -7,6 +7,7 @@ constants.SERVER = {
   ADMINPASSWORD: process.env.ADMIN_PASSWORD,
   PROJECT_NAME: `Demo Backend.`,
   JWT_SECRET: `fasdkfjklandfkdsfjladsfodfafjalfadsfkads`,
+  PUSH_NOTIFICATION_KEY: `<PUSH NOTICICATION KEY>`,
   BCRYPT_SALT: 10,
   ARRAY_FIRST_INDEX: 0,
   NOT_FOUND_INDEX: -1,
