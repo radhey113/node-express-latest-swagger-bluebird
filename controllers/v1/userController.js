@@ -3,7 +3,7 @@
 const {
     encryptPswrd, decryptPswrd,
     generateJWTToken, sendEmailNodeMailer,
-    generateOTP, addTimeToDate
+    generateOTP, addTimeToDate, tokenManagerFun
 } = require('../../utils/utils');
 const { RESPONSEMESSAGES, MESSAGES, SERVER, EMAIL_TYPES, OTP_EXPIRY  } = require("../../utils/constants");
 
@@ -23,44 +23,35 @@ userController.registerUser = (body) => {
     return new Promise((resolve, reject) => {
         signUp(body).then(user => {
             delete user.signUpType;
-            delete user.password;
-
             resolve(RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.REGISTERED_SUCCESSFULLY, user));
         }).catch(error => {
-
             reject(error);
         })
     });
 };
 
 /**
- * function to fetch an user from the system by its id.
+ * Sign in user
+ * @param body
+ * @returns {Promise<*|{data, message, type, statusCode}>}
  */
 userController.signIn = async (body) => {
-    let Criteria = { email: body.email }, updatedData,
-        Projection = { __v: NOT }, Options = { lean: true }, tokenManagerArr = [];
+    let Criteria = { email: body.email }, updatedData, Projection = { __v: NOT },
+        Options = { lean: true }, tokenManagerArr;
 
     let user = await getOneDoc(userModel, Criteria, Projection, Options);
     if(!user) {
         throw RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.INVALID_CREDENTIALS);
     }
-
     let isMatched = await decryptPswrd(body.password, user.password);
 
     if(isMatched){
-        let accessToken = await generateJWTToken(user._id);
-        tokenManagerArr.push({
-             accessToken: accessToken,
-             deviceToken: body.deviceToken
-        });
+        tokenManagerArr = await tokenManagerFun(user, (body || {}).deviceToken);
+        let accessToken = await generateJWTToken(user._id), criteria = { _id: user._id },
+            dataToUpdate = { $set: { tokenManager: tokenManagerArr } },
+            options = { ...Options, new: true, projection: { password: NOT, tokenManager: NOT, __v: NOT, signUpType: NOT } };
 
-        /** update user with token **/
-        updatedData = await updateData(userModel, { _id: user._id }, { $set: { tokenManager: tokenManagerArr } }, { lean: true, new: true });
-        delete updatedData.password;
-        delete updatedData.tokenManager;
-        delete updatedData.__v;
-        delete updatedData.signUpType;
-
+        updatedData = await updateData(userModel, criteria, dataToUpdate, options);
         return RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.LOGGED_IN_SUCCESSFULLY, { ...updatedData, accessToken });
 
     }else {
@@ -68,34 +59,30 @@ userController.signIn = async (body) => {
     }
 };
 
+
+/**
+ * Forget password email
+ * @param body
+ * @returns {Promise<*>}
+ */
 userController.forgotPassword = async (body) => {
     return new Promise(async (resolve, reject) => {
 
-        let user = await getOneDoc(userModel, { email: body.email }, {  __v: NOT, password: NOT }, { lean: true });
-
+        let criteria = { email: body.email }, projection = {  __v: NOT, password: NOT }, options = { lean: true };
+        let user = await getOneDoc(userModel, criteria, projection, options);
         if(!user) {
            return reject(RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.NOT_FOUND));
         }
-        let OTP = generateOTP();
 
-        let currentDate = new Date();
-        let expiryTime = await addTimeToDate(new Date(), OTP_EXPIRY.TIME_TO_ADD, OTP_EXPIRY.PREFIX);
+        criteria = { userId: user._id }, options = { new: true, lean: true, upsert: true };
+        let OTP = generateOTP(), currentDate = new Date(), expiryTime = await addTimeToDate(currentDate, OTP_EXPIRY.TIME_TO_ADD, OTP_EXPIRY.PREFIX);
+        let dataToUpdate = { $set: { OTP: OTP, createdAt: new Date(), type: EMAIL_TYPES.FORGOT_PASSWORD, expireAt: expiryTime}};
 
-        const verificationData = await updateData(
-            verificationModel,
-            { userId: user._id },
-            { $set: { OTP: OTP, createdAt: new Date(), type: EMAIL_TYPES.FORGOT_PASSWORD, expireAt: expiryTime}},
-            { new: true, lean: true, upsert: true }
-        );
-
+        const verificationData = await updateData( verificationModel, criteria, dataToUpdate, options);
         user.OTP = verificationData.OTP;
-
         await sendEmailNodeMailer(user, EMAIL_TYPES.FORGOT_PASSWORD);
 
-        return resolve(Object.assign(
-            RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.PASSWORD_RESET_OTP),
-            { }
-        ));
+        return resolve(Object.assign( RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.PASSWORD_RESET_OTP), { } ));
     })
 };
 
@@ -107,24 +94,16 @@ userController.forgotPassword = async (body) => {
  * @returns {Promise<(*|{statusCode, msg, status, type}) & {}>}
  */
 userController.changePassword_OTP = async (body) => {
-
-    let verificationDocId;
-
-    /** Check user is exist or not  **/
-    const user = await getOneDoc( userModel,{ email: body.email }, { _id: YES, email: YES}, { lean: true });
-
+    let verificationDocId, criteria = { email: body.email }, projection = { _id: YES, email: YES}, options = { lean: true };
+    const user = await getOneDoc( userModel,criteria, projection, options);
     if(!user) {
         throw RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.NOT_FOUND);
     }
+    criteria = { userId: user._id, OTP: body.otp, type: EMAIL_TYPES.FORGOT_PASSWORD };
+    projection = { __v: NOT };
 
     /** Check OTP is available or not **/
-    const OTP_DOC = await getOneDoc(
-        verificationModel,
-        { userId: user._id, OTP: body.otp, type: EMAIL_TYPES.FORGOT_PASSWORD },
-        { __v: YES },
-        { lean: true }
-        );
-
+    const OTP_DOC = await getOneDoc(criteria, projection, options );
     if(!OTP_DOC){
         throw RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.INVALID_OTP);
     }
@@ -132,28 +111,26 @@ userController.changePassword_OTP = async (body) => {
 
     /** Reset user password again **/
     let password = await encryptPswrd(body.password);
-    let updated = await updateData( userModel, { _id: user._id }, { $set: { password: password } }, { lean: true });
+    let updated = await updateData( userModel, { _id: user._id }, { $set: { password: password } }, options);
 
     if(updated){
-
         /** Remove OTP Doc after successfully changing password **/
         await removeOne(verificationModel, { _id: verificationDocId });
-        return Object.assign(
-            RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.PASSWORD_CHANGED)
-        )
+        return Object.assign(RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.PASSWORD_CHANGED));
     } else{
         throw RESPONSEMESSAGES.ERROR.FAILED_REQUEST(MESSAGES.PASSWORD_RESET_FAILED)
     }
 };
 
 
-
 /**
- * function to remove an user from the system.
+ * Remove user from db
+ * @param requestBody
+ * @returns {Promise<*>}
  */
-userController.removeUser = async (requestBody) => {
-    let Criteria = { _id: requestBody.id }, Projection = { __v: NOT }, Options = { lean: true };
-    let removedUser = await removeOne(userModel, Criteria, Projection, Options);
+userController.removeUser = async (body) => {
+    let criteria = { _id: body.id }, projection = { __v: NOT }, options = { lean: true };
+    let removedUser = await removeOne(userModel, criteria, projection, options);
     if (removedUser) {
         return Object.assign(RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.USER_REMOVED_SUCCESSFULLY));
     }
@@ -161,11 +138,13 @@ userController.removeUser = async (requestBody) => {
 };
 
 /**
- * function to update an user to the system.
+ * Update user from db
+ * @param requestBody
+ * @returns {Promise<*>}
  */
-userController.updateUser = async (requestBody) => {
-    let Criteria = { _id: requestBody.id }, Options = { lean: true };
-    let updatedUser = await updateData(userModel, Criteria, requestBody, Options );
+userController.updateUser = async (body) => {
+    let criteria = { _id: body.id }, options = { lean: true };
+    let updatedUser = await updateData(userModel, criteria, requestBody, options);
     if(updatedUser){
         return Object.assign(RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.USER_UPDATED_SUCCESSFULLY), { user: updatedUser });
     }

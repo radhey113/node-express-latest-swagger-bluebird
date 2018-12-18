@@ -74,7 +74,6 @@ let getHandlerMethod = (handler) => {
         };
         handler(body)
             .then((result) => {
-                console.log(result);
                 response.status(result.statusCode).json(result);
             })
             .catch((err) => {

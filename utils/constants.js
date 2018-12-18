@@ -7,7 +7,7 @@ constants.SERVER = {
   ADMINPASSWORD: process.env.ADMIN_PASSWORD,
   PROJECT_NAME: `Demo Backend.`,
   JWT_SECRET: `fasdkfjklandfkdsfjladsfodfafjalfadsfkads`,
-  PUSH_NOTIFICATION_KEY: `<PUSH NOTICICATION KEY>`,
+  PUSH_NOTIFICATION_SERVER_KEY: `<PUSH NOTICICATION KEY>`,
   BCRYPT_SALT: 10,
   ARRAY_FIRST_INDEX: 0,
   NOT_FOUND_INDEX: -1,
@@ -74,18 +74,15 @@ constants.MESSAGES = {
   PASSWORD_RESET_OTP: 'Your One Time Password has been sent to your registered email address.',
   PASSWORD_CHANGED: 'Your password has been successfully changed.',
   PASSWORD_RESET_FAILED: 'Your password reset request is failed.',
+  USER_UPDATED_SUCCESSFULLY: 'User data has been updated successfully.',
+  USER_REMOVED_SUCCESSFULLY: 'User removed successfully.'
 };
 
 constants.FB_GRAPH_API = 'https://graph.facebook.com/me?fields=email,gender,name,picture.type(large),birthday,age_range&access_token=';
-
 constants.EXISTING_SINGLE_CATEGORY_ID = '5b28e5a73235d6291cb036ab';
 
 constants.GAME_TYPES = {
   COIN_PUSHER: 1,
-  ARCHERY_STRIKE: 2,
-  JELLY_GARDEN: 3,
-  TWISTY_TUNNEL: 4,
-  TRASH_CAT: 5
 };
 
 constants.EMAIL_TYPES = {
@@ -206,7 +203,6 @@ constants.RESPONSEMESSAGES = {
       }
   }
 };
-
 
 constants.EMAIL_TEMPLATE = {
     FORGET_PSWRD: "<!DOCTYPE html><html lang=en><head> <meta charset=utf-8> <meta name=viewport content=width=device-width, initial-scale=1.0> <meta name=description content=> <meta name=author content=> <title>Le Passe Trappe</title> <link href=css/font-awesome.min.css rel=stylesheet> <style>p{margin: 0px;}h3{margin: 0px;}.wrapper{padding: 20px; background-color: #F0F0F0;}</style></head><body> <div class=wrapper> <p id=userName>Hi {{name}},</p><p id=resetCode>OTP for reset password: <b>{{code}}</b></p><p>&nbsp;</p><p>If you need assistance, please email our customer service department at <a href=mailto:customerservice@demo.com>customerservice@demo.com</a> or you can refer to our website : <a href=demo.com>demo.com</a></p><p>&nbsp;</p><p>Thanks again for choosing our App, we hope it makes a big difference in your lives ☺</p><p>&nbsp;</p><p>Sincerely,</p><p>&nbsp;</p><p>Founder Name</p><p>Founder</p><a href=demo.com>demo.com</a> <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p></div></body></html>"

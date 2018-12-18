@@ -209,6 +209,18 @@ const addTimeToDate = (date, timetoadd, timePrefix) => {
     return moment(date).add(timetoadd, timePrefix).toDate();
 };
 
+/**
+ * Generate device Token Array
+ * @param user
+ * @param deviceToken
+ * @returns {Promise<{accessToken: ArrayBuffer, deviceToken: (*|string)}[]>}
+ */
+const tokenManagerFun = async (user, deviceToken) => {
+  return [{
+      deviceToken: deviceToken || '',
+      accessToken: await generateJWTToken(user._id)
+  }];
+};
 
 /*exporting all object from here*/
 module.exports = {
@@ -224,5 +236,6 @@ module.exports = {
   emailTypes: emailTypes,
   sendEmailNodeMailer: sendEmailNodeMailer,
   generateOTP: generateOTP,
-  addTimeToDate: addTimeToDate
+  addTimeToDate: addTimeToDate,
+  tokenManagerFun: tokenManagerFun
 };

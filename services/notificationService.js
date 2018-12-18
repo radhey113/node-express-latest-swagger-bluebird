@@ -5,7 +5,7 @@ const { SERVER } = require(`./utils/constants`);
 let notificationService = {};
 const FCM = require('fcm-node');
 
-const fcm = new FCM(SERVER.PUSH_NOTIFICATION_KEY);
+const fcm = new FCM(SERVER.PUSH_NOTIFICATION_SERVER_KEY);
 
 /**
  * One to one notification service
@@ -13,7 +13,6 @@ const fcm = new FCM(SERVER.PUSH_NOTIFICATION_KEY);
  * @returns {boolean}
  */
 notificationService.oneToOne = async (deviceToken, data) => {
-
     let message = {
         registration_ids: deviceToken,
         notification: {
@@ -25,9 +24,7 @@ notificationService.oneToOne = async (deviceToken, data) => {
         data: data,
         priority: `high`
     };
-
     await sendNotification(message);
-
     return true
 };
 
@@ -37,7 +34,6 @@ notificationService.oneToOne = async (deviceToken, data) => {
  * @returns {boolean}
  */
 notificationService.oneToOne = async (deviceToken, data) => {
-
     let message = {
         to: deviceToken,
         notification: {
@@ -49,9 +45,7 @@ notificationService.oneToOne = async (deviceToken, data) => {
         data:data,
         priority: `high`
     };
-
     await sendNotification(message);
-
     return true
 };
 
@@ -72,7 +66,6 @@ const sendNotification = async (msg) => {
         }
     });
 };
-
 
 /*** Notification export **/
 module.exports = notificationService;
