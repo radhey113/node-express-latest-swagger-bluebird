@@ -82,8 +82,20 @@ class Swagger {
             .join('');
 
         const parameters = [];
+        const { body, params, query, headers, responseClass, formData } = joiDefinistions;
 
-        const { body, params, query, headers, responseClass } = joiDefinistions;
+        if(formData){
+            parameters.push({
+                "in": "formData",
+                "name": "file",
+                "type": "file",
+                "required": true,
+                "description": "Upload form data here.",
+                "schema": {
+                    "$ref": `#/definitions/${name}`
+                }
+            })
+        }
 
         if (body) {
             parameters.push({
@@ -123,8 +135,13 @@ class Swagger {
 
         if (query) {
             const keys = Object.keys(toSwagger.properties.query.properties).map((key) => key);
-
+            let requiredFields = toSwagger.properties.query.required;
             keys.forEach((key) => {
+                let index = requiredFields ? requiredFields.findIndex(k => key === k) : -1;
+
+                if(index > -1){
+                    toSwagger.properties.query.properties[key].required = true;
+                }
                 parameters.push({
                     "in": "query",
                     "name": key,

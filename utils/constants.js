@@ -54,6 +54,7 @@ constants.OTP_EXPIRY = {
 constants.EMAILPATTERN = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 constants.MESSAGES = {
+  DEFAULT_SUCCESS: `Success`,
   MONGOERROR: 'Database error',
   BAD_REQUEST: 'Bad Request.',
   NOT_FOUND: 'Not found.',

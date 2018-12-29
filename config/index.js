@@ -5,6 +5,6 @@
  ***********************************/
 module.exports = {
     SERVER_CONFIG        : require("./serverConfig"),
-    AWS                  : require("./awsConfig"),
+    AWS_CONFIG           : require("./awsConfig"),
     SwaggerCongif        : require("./swaggerServiceConfig"),
 };

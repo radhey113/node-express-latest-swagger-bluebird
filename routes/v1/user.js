@@ -6,7 +6,7 @@ const { LOGIN_TYPE, SERVER } = require('../../utils/constants');
 const { convertKeysValueToArray } = require('../../utils/utils');
 const { user } = require('../../utils/responseMsg');
 const { authorization, convertErrorIntoReadableForm } = require('../../utils/utils');
-const { registerUser, signIn, forgotPassword, changePassword_OTP } = require('../../controllers').v1.userController;
+const { registerUser, signIn, forgotPassword, changePassword_OTP, fileUpload } = require('../../controllers').v1.userController;
 
 const signInType = convertKeysValueToArray(LOGIN_TYPE);
 
@@ -85,6 +85,22 @@ Routes = [
         auth: false,
         failAction: convertErrorIntoReadableForm,
         handler: changePassword_OTP
+    },
+
+    {
+        method: `POST`,
+        path: `/v1/user/file_upload`,
+        joiSchemaForSwagger: {
+            formData: { file: true },
+            group: `User File Upload`,
+            description: `File Upload System.`,
+            model: `User file upload.`,
+            // headers: authorization(MESSAGES.AUTHORIZATION_TOKEN),
+        },
+        auth: false,
+
+        failAction: convertErrorIntoReadableForm,
+        handler: fileUpload
     },
 ];
 module.exports = Routes;

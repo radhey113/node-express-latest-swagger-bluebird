@@ -1,10 +1,11 @@
+
+`use strict`;
+
 module.exports = {
-    "bucket": "<bucket>",
-    "accessKeyId": "<aws access key>",
-    "secretAccessKey": "<aws secret key>",
-    "s3URL": "<s3 bucket url>",
-    "folder": {
-        "profilePicture": "<folders>",
-        "thumb": "<folder>"
-    }
+    "bucket": "<bucket name>/",
+    "accessKeyId": "<access key here>",
+    "secretAccessKey": "<secret access key here>",
+    "s3URLFeed": "<feed url>",
+    "s3URLThumb": "<thumb nail url>",
+    "feedfolder": [ "<thumb folder>", "<feeds folder>" ]
 };

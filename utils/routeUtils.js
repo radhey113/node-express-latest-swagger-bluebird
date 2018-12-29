@@ -12,6 +12,7 @@ const { AVAILABLE_AUTHS, RESPONSEMESSAGES, MESSAGES } = require('../utils/consta
 const { convertErrorIntoReadableForm } = require('./utils');
 
 const authService = require('../services/authService');
+const { uploadFile  } = require('../services/fileUploadService');
 let routeUtils = {};
 
 /**function to create routes in the express.**/
@@ -66,22 +67,34 @@ let getValidatorMiddleware = (route) => {
  * @param {*} handler 
  */
 let getHandlerMethod = (handler) => {
-    return (request, response) => {
-        let body = {
-            ...(request.body || {}),
-            ...(request.params || {}),
-            ...(request.query || {}),
-        };
-        handler(body)
-            .then((result) => {
+    return async (request, response) => {
+        if(((fileUpload || {}).formData || {}).file){
+            try {
+                let result = await uploadFile(request, response);
+                let responseData = RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.DEFAULT_SUCCESS, result);
+                response.status(responseData.statusCode).json(responseData);
+            } catch (exe){
+                let errObj = RESPONSEMESSAGES.ERROR.INTERNAL_SERVER_ERROR(MESSAGES.SOMETHING_WENT_WRONG);
+                response.status(errObj.statusCode).json(errObj);
+            }
+        } else {
+            let body = {
+                ...(request.body || {}),
+                ...(request.params || {}),
+                ...(request.query || {}),
+                userDetatils: ((request || {}).user || {})
+            };
+            handler(body).then((result) => {
                 response.status(result.statusCode).json(result);
-            })
-            .catch((err) => {
-                if (!err.statusCode && !err.status) {
+            }).catch(async (err) => {
+                console.error(`Error: ${JSON.stringify(err)}`);
+                if ((!err.statusCode && !err.code) && !err.status) {
                     err = RESPONSEMESSAGES.ERROR.INTERNAL_SERVER_ERROR(MESSAGES.SOMETHING_WENT_WRONG);
                 }
+                err = await errorObj(err);
                 response.status(err.statusCode).json(err);
             });
+        }
     };
 };
 
@@ -100,7 +113,7 @@ let createSwaggerUIForRoutes = (app, routes = []) => {
     });
 
     const swaggerDocument = require('../swagger.json');
-    app.use('/document', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
+    app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 };
 
 
