@@ -4,7 +4,7 @@
   "description": "Demo with new swagger",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/.bin/mocha",
     "start": "node index.js"
   },
   "repository": {
@@ -34,5 +34,10 @@
     "multer": "^1.4.1",
     "nodemailer": "^4.7.0",
     "swagger-ui-express": "^4.0.1"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "request": "^2.88.0"
   }
 }
