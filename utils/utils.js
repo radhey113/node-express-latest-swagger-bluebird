@@ -222,6 +222,46 @@ const tokenManagerFun = async (user, deviceToken) => {
   }];
 };
 
+
+/**
+ * Criteria for or
+ * @param body
+ * @param criteriaKeys
+ * @returns {Promise<{$or: Array}>}
+ */
+const orCriteria = async (body, id, criteriaKeys) => {
+    let lengthOfCriteria = criteriaKeys.length, criteria = { _id: { $ne: id}, $or: []}, obj, keys = [];
+    for(let i = SERVER.NOT; i < lengthOfCriteria; i++){
+        obj = {};
+        if(body[criteriaKeys[i]]) {
+            obj[criteriaKeys[i]] = body[criteriaKeys[i]];
+            criteria[`$or`].push(obj);
+            keys.push(criteriaKeys[i]);
+        }
+    }
+    return { criteria, keys };
+};
+
+
+
+/** Case sensitive search **/
+const caseSensitive = (queryText)=>{
+    return new RegExp(["^.*", queryText, ".*$"].join(""), "i");
+};
+
+
+
+/**
+ * Current time in minutes
+ * @returns {Promise<void>}
+ */
+const currentTimeInMinutes =  () => {
+    let currentDate = new Date().toLocaleString(TIME_ZONE.ASIA_KOLKATA.LNG, { timeZone: TIME_ZONE.ASIA_KOLKATA.ZONE });
+    currentDate = new Date(currentDate);
+    let getTimeInMinutes = ((currentDate.getHours() * SERVER.COMMON_TIME) + currentDate.getMinutes());
+    return getTimeInMinutes;
+};
+
 /*exporting all object from here*/
 module.exports = {
   encryptPswrd: encryptPswrd,
@@ -237,5 +277,8 @@ module.exports = {
   sendEmailNodeMailer: sendEmailNodeMailer,
   generateOTP: generateOTP,
   addTimeToDate: addTimeToDate,
-  tokenManagerFun: tokenManagerFun
+  tokenManagerFun: tokenManagerFun,
+  orCriteria: orCriteria,
+  caseSensitive: caseSensitive,
+  currentTimeInMinutes: currentTimeInMinutes
 };
