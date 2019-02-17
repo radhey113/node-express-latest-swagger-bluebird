@@ -72,4 +72,4 @@ module.exports = () => {
     }).catch((err) => {
         console.log(`Error in starting server ${err}`);
     });
-}
+};

@@ -11,11 +11,13 @@ constants.SERVER = {
   BCRYPT_SALT: 10,
   ARRAY_FIRST_INDEX: 0,
   NOT_FOUND_INDEX: -1,
-  GUEST_PREFIX: 'guest_',
-  NODEMAILER_CODE: 'Gmail',
+  GUEST_PREFIX: `guest_`,
+  NODEMAILER_CODE: `Gmail`,
   NODEMAILER_USER: '<gmail acccount>',
   NODEMAILER_PASSWORD: '<password>',
 
+
+  AUTH_PREFIX: `demo`,
   /** Projection keys **/ 
   YES: 1,
   NOT: 0
@@ -49,6 +51,12 @@ constants.AVAILABLE_AUTHS = {
 constants.OTP_EXPIRY = {
     TIME_TO_ADD: 5,
     PREFIX: 'm'
+};
+
+constants.UPLOAD_DATA = {
+  MEDIA: 1,
+  DOC: 2,
+  CSV: 3
 };
 
 constants.EMAILPATTERN = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

@@ -4,14 +4,18 @@
 const Joi = require('joi');
 const { LOGIN_TYPE, SERVER } = require('../../utils/constants');
 const { convertKeysValueToArray } = require('../../utils/utils');
+
 const { user } = require('../../utils/responseMsg');
 const { authorization, convertErrorIntoReadableForm } = require('../../utils/utils');
-const { registerUser, signIn, forgotPassword, changePassword_OTP, fileUpload } = require('../../controllers').v1.userController;
+
+const {
+    registerUser, signIn, forgotPassword,
+    changePassword_OTP, fileUpload
+} = require('../../controllers').v1.userController;
 
 const signInType = convertKeysValueToArray(LOGIN_TYPE);
 
-let Routes = [];
-Routes = [
+let Routes = [
 	{
 		method: 'POST',
 		path: '/v1/register',

@@ -90,10 +90,10 @@ userController.forgotPassword = async (body) => {
 
 /**
  * Change user password with OTP
- * @param request
+ * @param body
  * @returns {Promise<(*|{statusCode, msg, status, type}) & {}>}
  */
-userController.changePassword_OTP = async (body) => {
+userController.changePassword_OTP = async body => {
     let verificationDocId, criteria = { email: body.email }, projection = { _id: YES, email: YES}, options = { lean: true };
     const user = await getOneDoc( userModel,criteria, projection, options);
     if(!user) {
@@ -125,10 +125,10 @@ userController.changePassword_OTP = async (body) => {
 
 /**
  * Remove user from db
- * @param requestBody
+ * @param body
  * @returns {Promise<*>}
  */
-userController.removeUser = async (body) => {
+userController.removeUser = async body => {
     let criteria = { _id: body.id }, projection = { __v: NOT }, options = { lean: true };
     let removedUser = await removeOne(userModel, criteria, projection, options);
     if (removedUser) {
@@ -139,12 +139,12 @@ userController.removeUser = async (body) => {
 
 /**
  * Update user from db
- * @param requestBody
+ * @param body
  * @returns {Promise<*>}
  */
-userController.updateUser = async (body) => {
+userController.updateUser = async body => {
     let criteria = { _id: body.id }, options = { lean: true };
-    let updatedUser = await updateData(userModel, criteria, requestBody, options);
+    let updatedUser = await updateData(userModel, criteria, body, options);
     if(updatedUser){
         return Object.assign(RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.USER_UPDATED_SUCCESSFULLY), { user: updatedUser });
     }

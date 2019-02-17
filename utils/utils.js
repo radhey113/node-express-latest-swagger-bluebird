@@ -51,10 +51,9 @@ let convertIdToMongooseId = (stringId) => {
 
 
 /** create jsonwebtoken **/
-let generateJWTToken = (userId) => {
+let generateJWTToken = (userId, timeZone) => {
   let jwtToken = jwt.sign({
-		id: userId,
-		timestamp: Date.now
+		id: userId, timeZone, timestamp: Date.now
 	}, SERVER.JWT_SECRET, { algorithm: 'HS256' });
 	return jwtToken;
 };
@@ -91,8 +90,19 @@ let messageLogs = (error, success) => {
  */
 const authorization = (msg) => {
    return Joi.object({
-       'authorization': Joi.string().required().description(msg)
+       'authorization': Joi.string().required().description(msg).label(`Authorization`),
+       'api_secret': Joi.string().required().description(`Enter api secret.`).label(`API Secret`)
    }).unknown();
+};
+
+/**
+ * Enter api secret
+ * @returns {*|*}
+ */
+const apiSecret = () => {
+   return Joi.object({
+        'api_secret': Joi.string().required().description(`Enter api secret.`).label(`API Secret`)
+    }).unknown();
 };
 
 
@@ -185,7 +195,7 @@ const emailTypes = (userObject, type) => {
     switch (type){
 
         case EMAIL_TYPES.FORGOT_PASSWORD:
-            // let link = `${constants.SERVER.VERIFICATION_URL}?email=${userObject.email}&type=${constants.VERIFICATION_TYPE.EMAIL}&otp=${userObject.otp}`;
+            /** let link = `${constants.SERVER.VERIFICATION_URL}?email=${userObject.email}&type=${constants.VERIFICATION_TYPE.EMAIL}&otp=${userObject.otp}`; **/
             EmailStatus['Subject'] = SUBJECT_OF_EMAILS.FORGOT_PASSWORD;
             EmailStatus.template = EMAIL_TEMPLATE.FORGET_PSWRD;
             break;
@@ -243,12 +253,27 @@ const orCriteria = async (body, id, criteriaKeys) => {
 };
 
 
-
 /** Case sensitive search **/
 const caseSensitive = (queryText)=>{
     return new RegExp(["^.*", queryText, ".*$"].join(""), "i");
 };
 
+
+/**
+ * Is required
+ * @param body
+ * @param keys
+ * @returns {Promise<void>}
+ */
+const customRequiredMsg = async (body, keys) => {
+    for (let i = SERVER.NOT; i < keys.length; i++) {
+        if(!body[keys[i]]){
+            keys[i] = keys[i].charAt(SERVER.NOT).toUpperCase() + keys[i].substr(SERVER.YES);
+            throw RESPONSEMESSAGES.ERROR.BAD_REQUEST(keys[i] + MESSAGES.REQUIRED);
+        }
+    }
+    return null;
+};
 
 
 /**
@@ -280,5 +305,6 @@ module.exports = {
   tokenManagerFun: tokenManagerFun,
   orCriteria: orCriteria,
   caseSensitive: caseSensitive,
-  currentTimeInMinutes: currentTimeInMinutes
+  currentTimeInMinutes: currentTimeInMinutes,
+  customRequiredMsg: customRequiredMsg
 };
