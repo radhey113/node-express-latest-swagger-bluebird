@@ -42,6 +42,11 @@ constants.LOGIN_TYPE = {
     GUEST: 3
 };
 
+constants.IMAGE_PREFIX = {
+  FEED: 'feed_',
+  THUMB: 'thumb_'
+};
+
 constants.THIRD_PARTY_LOGIN = [2];
 
 constants.AVAILABLE_AUTHS = {

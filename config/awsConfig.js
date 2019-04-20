@@ -7,5 +7,5 @@ module.exports = {
     "secretAccessKey": "<secret access key here>",
     "s3URLFeed": "<feed url>",
     "s3URLThumb": "<thumb nail url>",
-    "feedfolder": [ "<thumb folder>", "<feeds folder>" ]
+    "feedfolder": [ "thumb", "feeds>" ]
 };

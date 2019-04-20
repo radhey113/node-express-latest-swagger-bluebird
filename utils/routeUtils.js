@@ -76,6 +76,7 @@ let getValidatorMiddleware = (route) => {
 let getHandlerMethod = (handler, fileUpload) => {
     return async (request, response) => {
         if(((fileUpload || {}).formData || {}).file){
+            console.log("here I am: ")
             try {
                 let event = await selectFileEvent(((fileUpload || {}).formData || {}).type);
                 let result = await event(request, response);
