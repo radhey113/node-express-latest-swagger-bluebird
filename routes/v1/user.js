@@ -35,6 +35,7 @@ let Routes = [
 			model: `Register`,
             responseClass: user.registerUser
 		},
+        auth: false,
         failAction: convertErrorIntoReadableForm,
 		handler: registerUser,
 	},
