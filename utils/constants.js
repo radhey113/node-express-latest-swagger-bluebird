@@ -89,7 +89,8 @@ constants.MESSAGES = {
   PASSWORD_CHANGED: 'Your password has been successfully changed.',
   PASSWORD_RESET_FAILED: 'Your password reset request is failed.',
   USER_UPDATED_SUCCESSFULLY: 'User data has been updated successfully.',
-  USER_REMOVED_SUCCESSFULLY: 'User removed successfully.'
+  USER_REMOVED_SUCCESSFULLY: 'User removed successfully.',
+  IS_REQUIRED: ' is required.'
 };
 
 constants.FB_GRAPH_API = 'https://graph.facebook.com/me?fields=email,gender,name,picture.type(large),birthday,age_range&access_token=';

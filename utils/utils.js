@@ -1,7 +1,7 @@
 
 'use strict';
 
-let { SERVER, MESSAGES, SUBJECT_OF_EMAILS, EMAIL_TYPES, EMAIL_TEMPLATE } = require('./constants');
+let { SERVER, RESPONSEMESSAGES, MESSAGES, SUBJECT_OF_EMAILS, EMAIL_TYPES, EMAIL_TEMPLATE } = require('./constants');
 const MONGOOSE = require('mongoose');
 const BCRYPT = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -31,17 +31,6 @@ let encryptPswrd = (userPassword) => {
  */
 let decryptPswrd = async (payloadPassword, userPassword) => {
   return BCRYPT.compare((payloadPassword || ""), (userPassword || ""));
-};
-
-/**
- * get Enum array from object
- * @param keyName
- * @returns {any[]}
- */
-let getEnumArray = (keyName) => {
-  // return Object.keys(CONSTANTS[keyName]).map((key) => {
-  //   return CONSTANTS[keyName][key];
-  // });
 };
 
 /** used for converting string id to mongoose object id */
@@ -269,7 +258,7 @@ const customRequiredMsg = async (body, keys) => {
     for (let i = SERVER.NOT; i < keys.length; i++) {
         if(!body[keys[i]]){
             keys[i] = keys[i].charAt(SERVER.NOT).toUpperCase() + keys[i].substr(SERVER.YES);
-            throw RESPONSEMESSAGES.ERROR.BAD_REQUEST(keys[i] + MESSAGES.REQUIRED);
+            throw RESPONSEMESSAGES.ERROR.BAD_REQUEST(keys[i] + MESSAGES.IS_REQUIRED);
         }
     }
     return null;
@@ -294,7 +283,6 @@ module.exports = {
   convertIdToMongooseId: convertIdToMongooseId,
   generateJWTToken: generateJWTToken,
   messageLogs: messageLogs,
-  getEnumArray:getEnumArray,
   convertErrorIntoReadableForm:convertErrorIntoReadableForm,
   authorization: authorization,
   convertKeysValueToArray: convertKeysValueToArray,
