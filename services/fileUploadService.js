@@ -1,4 +1,3 @@
-
 `use strict`;
 
 const fs = require(`fs`);
@@ -10,8 +9,8 @@ const mime = require(`mime-types`);
 const gm = require(`gm`).subClass({imageMagick: true});
 const fsExtra = require(`fs-extra`);
 
-const { AWS_CONFIG } = require(`../config`);
-const { IMAGE_PREFIX, SERVER } = require(`../utils/constants`);
+const {AWS_CONFIG} = require(`../config`);
+const {IMAGE_PREFIX, SERVER} = require(`../utils/constants`);
 
 AWS.config.update({
     accessKeyId: AWS_CONFIG.accessKeyId,
@@ -31,7 +30,7 @@ let storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         let fileName = file.originalname.split('.');
-        let fileExtension = fileName[fileName.length-1];
+        let fileExtension = fileName[fileName.length - 1];
         cb(null, Date.now() + '.' + fileExtension);
     }
 });
@@ -40,14 +39,14 @@ let storage = multer.diskStorage({
  * Upload single file
  * @type {*|*}
  */
-const upload = multer({ storage: storage }).single('file');
+const upload = multer({storage: storage}).single('file');
 
 /**
  * Upload file
  * @param {*} file
  */
 fileUploadService.uploadFile = async (request, response) => {
-    return new Promise( async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         /** Upload pic locally first **/
         upload(request, response, async (err) => {
             if (err) {
@@ -55,7 +54,7 @@ fileUploadService.uploadFile = async (request, response) => {
             }
             /** File data **/
             let fileData = request.file, fileName = fileData.originalname.split('.'),
-                fileExtension = fileName[fileName.length-1];
+                fileExtension = fileName[fileName.length - 1];
 
             fileName = Date.now() + '.' + fileExtension;
             let path = fileData.path;
@@ -89,11 +88,11 @@ fileUploadService.createThumbImage = async (originalPath, thumbnailPath) => {
 
         var readStream = fs.createReadStream(originalPath);
         gm(readStream)
-            .size({ bufferStream: true }, function (err, size) {
+            .size({bufferStream: true}, function (err, size) {
                 console.log(`GM Error: ${JSON.stringify(err)}`);
                 if (size) {
                     let height = 150;
-                    let width = (size.width * height)/size.height;
+                    let width = (size.width * height) / size.height;
                     this.thumb(width, height, thumbnailPath, 30,
                         /* .autoOrient()
                         .write(thumbnailPath1,*/ function (err, data) {

@@ -1,4 +1,3 @@
-
 'use strict';
 
 /** modules **/
@@ -13,14 +12,14 @@ const {
     MESSAGES, STATUS_CODE, SERVER,
     UPLOAD_DATA
 } = require('../utils/constants');
-const { convertErrorIntoReadableForm } = require('./utils');
+const {convertErrorIntoReadableForm} = require('./utils');
 
 const {
     userAuthentication, adminAuthentication,
     userAuthentication1, userAuthentication2
 } = require('../services/authService');
 
-const { uploadFile, readCSV  } = require('../services/fileUploadService');
+const {uploadFile, readCSV} = require('../services/fileUploadService');
 
 let routeUtils = {};
 
@@ -75,13 +74,13 @@ let getValidatorMiddleware = (route) => {
  */
 let getHandlerMethod = (handler, fileUpload) => {
     return async (request, response) => {
-        if(((fileUpload || {}).formData || {}).file){
+        if (((fileUpload || {}).formData || {}).file) {
             try {
                 let event = await selectFileEvent(((fileUpload || {}).formData || {}).type);
                 let result = await event(request, response);
                 let responseData = RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.DEFAULT_SUCCESS, result);
                 response.status(responseData.statusCode || 200).json(responseData);
-            } catch (exe){
+            } catch (exe) {
                 response.status(exe.statusCode).json(exe);
             }
         } else {
@@ -129,16 +128,16 @@ let createSwaggerUIForRoutes = (app, routes = []) => {
  * @returns {Promise<void>}
  */
 const assignUserAuth = async (middlewares, route) => {
-    if ( route.auth === USER_ROLES.USER ) {
+    if (route.auth === USER_ROLES.USER) {
         middlewares.push(await userAuthentication());
     }
-    if ( route.auth === USER_ROLES.DRIVER ) {
+    if (route.auth === USER_ROLES.DRIVER) {
         middlewares.push(await userAuthentication1());
     }
-    if ( route.auth === USER_ROLES.VENDOR ) {
+    if (route.auth === USER_ROLES.VENDOR) {
         middlewares.push(await userAuthentication2());
     }
-    if ( route.auth === USER_ROLES.ADMIN ) {
+    if (route.auth === USER_ROLES.ADMIN) {
         middlewares.push(adminAuthentication());
     }
     return middlewares;
@@ -164,7 +163,7 @@ const errorObj = async err => {
  */
 const selectFileEvent = async (type) => {
     let event;
-    switch(type){
+    switch (type) {
         case UPLOAD_DATA.MEDIA:
             event = uploadFile;
             break;

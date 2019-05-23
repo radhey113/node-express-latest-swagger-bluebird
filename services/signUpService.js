@@ -1,11 +1,10 @@
-
 'use strict';
 
 let signupService = {};
-const { LOGIN_TYPE, RESPONSEMESSAGES, MESSAGES, SERVER } = require('../utils/constants');
-const { encryptPswrd, tokenManagerFun } =  require('../utils/utils');
-const { userModel } = require('../models');
-const { saveData, getOneDoc, updateData } = require('./commonService');
+const {LOGIN_TYPE, RESPONSEMESSAGES, MESSAGES, SERVER} = require('../utils/constants');
+const {encryptPswrd, tokenManagerFun} = require('../utils/utils');
+const {userModel} = require('../models');
+const {saveData, getOneDoc, updateData} = require('./commonService');
 
 const NOT = SERVER.NOT;
 /***
@@ -14,13 +13,13 @@ const NOT = SERVER.NOT;
  * @returns {Promise<any>}
  */
 signupService.signUp = async (body) => {
-    return new Promise( async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
             let type = body.signUpType, returnData;
-            let criteria = { $or: [ { email: body.email }, { name: body.name } ] },
-                userDataExist = null, projection = { __v: NOT }, options = { lean: true }, newUserInfo, error;
+            let criteria = {$or: [{email: body.email}, {name: body.name}]},
+                userDataExist = null, projection = {__v: NOT}, options = {lean: true}, newUserInfo, error;
 
-            switch(type) {
+            switch (type) {
                 case LOGIN_TYPE.NORMAL:
                     userDataExist = await getOneDoc(userModel, criteria, projection, options);
                     returnData = await normalSignUp(userDataExist, body);
@@ -29,12 +28,12 @@ signupService.signUp = async (body) => {
                 case LOGIN_TYPE.FB:
                     /** Check required validation **/
                     error = requiredValidation(body);
-                    if(error) {
+                    if (error) {
                         return reject(error);
                     }
-                    criteria = { $or: [ { fbId: body.fbId },  { email: body.email } ] };
-                    userDataExist = await getOneDoc( userModel, criteria, projection, options);
-                    if( userDataExist ){
+                    criteria = {$or: [{fbId: body.fbId}, {email: body.email}]};
+                    userDataExist = await getOneDoc(userModel, criteria, projection, options);
+                    if (userDataExist) {
                         returnData = await fbSignUp_UserExist(userDataExist, body);
                     } else {
                         returnData = await fbSignup_firstTime(body);
@@ -45,7 +44,7 @@ signupService.signUp = async (body) => {
                     returnData = await guestSignup(body);
             }
             resolve(returnData);
-        } catch(e){
+        } catch (e) {
             reject(e);
         }
     })
@@ -60,17 +59,19 @@ signupService.signUp = async (body) => {
 const normalSignUp = async (userDataExist, body) => {
     let error;
     /** If user is already registered **/
-    if(userDataExist){
+    if (userDataExist) {
         error = emailOrNameValidation(userDataExist, body);
-        if(error) throw error;
+        if (error) throw error;
     }
     /** Check name and email is exist or not **/
     error = requiredValidation(body);
-    if(error) { throw error; }
+    if (error) {
+        throw error;
+    }
 
     body.password = await encryptPswrd(body.password);
     await saveData(userModel, body);
-    return { userData: {}, firstTime: true }
+    return {userData: {}, firstTime: true}
 };
 
 /**
@@ -89,14 +90,15 @@ const guestSignup = async (body) => {
 
     /** save data **/
     newUserInfo = await saveData(userModel, dataToSave);
-    let userData = newUserInfo._doc, criteria = { _id: userData._id }, dataToUpdate = { $set: { tokenManager: tokenManager } };
-    let options = { new: true, lean: true, projection: { tokenManager: NOT, __v: NOT, password: NOT } };
+    let userData = newUserInfo._doc, criteria = {_id: userData._id},
+        dataToUpdate = {$set: {tokenManager: tokenManager}};
+    let options = {new: true, lean: true, projection: {tokenManager: NOT, __v: NOT, password: NOT}};
     tokenManager = await tokenManagerFun(userData, (body || {}).deviceToken);
 
     /** update token **/
     userData = await updateData(userModel, criteria, dataToUpdate, options);
     userData.accessToken = tokenManager[SERVER.ARRAY_FIRST_INDEX].accessToken;
-    return { ...userData, firstTime: true };
+    return {...userData, firstTime: true};
 };
 
 /***
@@ -106,11 +108,12 @@ const guestSignup = async (body) => {
  * @returns {Promise<{[p: string]: *}>}
  */
 const fbSignUp_UserExist = async (user, body) => {
-    let criteria = { _id: user._id }, options = { lean: true, new: true, projection: { tokenManager: NOT, __v: NOT, password: NOT } };
+    let criteria = {_id: user._id},
+        options = {lean: true, new: true, projection: {tokenManager: NOT, __v: NOT, password: NOT}};
     let tokenManager = await tokenManagerFun(user, (body || {}).deviceToken);
-    user = await updateData(userModel, criteria, { $set: { fbId: body.fbId, tokenManager: tokenManager } }, options);
+    user = await updateData(userModel, criteria, {$set: {fbId: body.fbId, tokenManager: tokenManager}}, options);
     user.accessToken = tokenManager[SERVER.ARRAY_FIRST_INDEX].accessToken;
-    return { ...user, firstTime: false };
+    return {...user, firstTime: false};
 };
 
 /**
@@ -119,20 +122,25 @@ const fbSignUp_UserExist = async (user, body) => {
  * @returns {Promise<{firstTime: boolean}>}
  */
 const fbSignup_firstTime = async (body) => {
-    let dataToSave = { ...body };
+    let dataToSave = {...body};
     delete dataToSave.type;
 
     /** user signup first time from facebook **/
     dataToSave.createdAt = Date.now();
     dataToSave.updatedAt = Date.now();
     let newUserInfo = await saveData(userModel, dataToSave);
-    let userData = newUserInfo._doc, criteria = { _id: userData._id }, dataToUpdate = { $set: { tokenManager: tokenManager } };
+    let userData = newUserInfo._doc, criteria = {_id: userData._id},
+        dataToUpdate = {$set: {tokenManager: tokenManager}};
     let tokenManager = await tokenManagerFun(userData, (body || {}).deviceToken);
 
     /** update token and fb id **/
-    userData = await updateData(userModel, criteria , dataToUpdate, { new: true, lean: true, projection: { tokenManager: NOT, __v: NOT, password: NOT } });
+    userData = await updateData(userModel, criteria, dataToUpdate, {
+        new: true,
+        lean: true,
+        projection: {tokenManager: NOT, __v: NOT, password: NOT}
+    });
     userData.accessToken = tokenManager[SERVER.ARRAY_FIRST_INDEX].accessToken;
-    return { ...userData, firstTime: true }
+    return {...userData, firstTime: true}
 };
 
 /**
@@ -142,7 +150,7 @@ const fbSignup_firstTime = async (body) => {
  * @returns {*}
  */
 const emailOrNameValidation = (obj, body) => {
-    if(obj.email && obj.email === body.email){
+    if (obj.email && obj.email === body.email) {
         return RESPONSEMESSAGES.ERROR.BAD_REQUEST(MESSAGES.EMAIL_ALREADY_EXISTS);
     } else if (obj.name && obj.name === body.name) {
         return RESPONSEMESSAGES.ERROR.BAD_REQUEST(MESSAGES.NAME_ALREADY_EXISTS);
@@ -158,8 +166,7 @@ const emailOrNameValidation = (obj, body) => {
 const requiredValidation = (body) => {
     if (!body.email) {
         return RESPONSEMESSAGES.ERROR.BAD_REQUEST(MESSAGES.EMAIL_REQUIRED);
-    }
-    else if (!body.name) {
+    } else if (!body.name) {
         return RESPONSEMESSAGES.ERROR.BAD_REQUEST(MESSAGES.NAME_REQUIRED);
     }
     return '';
