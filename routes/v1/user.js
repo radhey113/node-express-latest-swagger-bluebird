@@ -1,11 +1,11 @@
 'use strict';
 
 const Joi = require('joi');
-const {LOGIN_TYPE, SERVER} = require('../../utils/constants');
-const {convertKeysValueToArray} = require('../../utils/utils');
+const { LOGIN_TYPE, SERVER } = require('../../utils/constants');
+const { convertKeysValueToArray } = require('../../utils/utils');
 
-const {user} = require('../../utils/responseMsg');
-const {authorization, convertErrorIntoReadableForm} = require('../../utils/utils');
+const { user } = require('../../utils/responseMsg');
+const { convertErrorIntoReadableForm } = require('../../utils/utils');
 
 const {
     registerUser, signIn, forgotPassword, changePassword_OTP, fileUpload
@@ -94,7 +94,7 @@ let Routes = [
         method: `POST`,
         path: `/v1/user/file_upload`,
         joiSchemaForSwagger: {
-            formData: {file: true},
+            formData: { file: true },
             group: `User File Upload`,
             description: `File Upload System.`,
             model: `User file upload.`,

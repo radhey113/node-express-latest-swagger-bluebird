@@ -8,7 +8,7 @@ const {
 const {RESPONSEMESSAGES, MESSAGES, SERVER, EMAIL_TYPES, OTP_EXPIRY} = require("../../utils/constants");
 
 const {userModel, verificationModel} = require('../../models');
-const {saveData, getOneDoc, updateData, removeOne, updateAccessToken} = require('../../services/commonService');
+const {getOneDoc, updateData, removeOne} = require('../../services/commonService');
 const {signUp} = require('../../services/signUpService');
 
 const YES = SERVER.YES, NOT = SERVER.NOT;

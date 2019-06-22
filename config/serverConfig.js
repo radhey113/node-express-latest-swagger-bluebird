@@ -3,7 +3,6 @@
 /******************************************
  ****** Default Server configuration ******
  ******************************************/
-console.log(process.env.DB_URL);
 let SERVER_CONFIG = {
     MONGODB: {
         HOST: "127.0.0.1",
