@@ -1,7 +1,6 @@
-
 `use strict`;
 
-const { SERVER } = require(`./utils/constants`);
+const {SERVER} = require(`./utils/constants`);
 let notificationService = {};
 const FCM = require('fcm-node');
 
@@ -39,10 +38,10 @@ notificationService.oneToOne = async (deviceToken, data) => {
         notification: {
             title: SERVER.PROJECT_NAME,
             body: data.msg,
-            sound:`default`,
+            sound: `default`,
             badge: SERVER.ARRAY_FIRST_INDEX
         },
-        data:data,
+        data: data,
         priority: `high`
     };
     await sendNotification(message);
@@ -56,7 +55,7 @@ notificationService.oneToOne = async (deviceToken, data) => {
  * @returns {Promise<void>}
  */
 const sendNotification = async (msg) => {
-    fcm.send(message, function(err, result){
+    fcm.send(message, function (err, result) {
         if (err) {
             console.log(`Something has gone wrong! ${JSON.stringify(err)}`);
             return false;

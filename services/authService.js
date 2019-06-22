@@ -2,9 +2,9 @@
 
 const jwt = require('jsonwebtoken');
 
-const { SERVER, MESSAGES, RESPONSEMESSAGES } = require('../utils/constants');
+const {SERVER, MESSAGES, RESPONSEMESSAGES} = require('../utils/constants');
 
-const { userModel } = require('../models');
+const {userModel} = require('../models');
 
 let authService = {};
 
@@ -41,9 +41,9 @@ let validateSuperAdmin = async (request) => {
         let authorizedAdmin = jwt.verify(token, SERVER.JWT_SECRET);
         if (authorizedAdmin.id) {
             let adminDetails = await userModel.findOne(
-                { _id: authorizedAdmin.id, "tokenManager.accessToken": token },
-                { __v: NOT, password: NOT, createdAt: NOT, updatedAt: NOT, role: NOT, tokenManager: NOT },
-                { lean: true }
+                {_id: authorizedAdmin.id, "tokenManager.accessToken": token},
+                {__v: NOT, password: NOT, createdAt: NOT, updatedAt: NOT, role: NOT, tokenManager: NOT},
+                {lean: true}
             );
             if (adminDetails && prefix === SERVER.AUTH_PREFIX) {
                 request.user = adminDetails;
@@ -135,9 +135,9 @@ authService.userAuthentication = async () => {
             let user = jwt.verify(token, SERVER.JWT_SECRET);
             if (user.id) {
                 let userDetails = await userModel.findOne(
-                    { _id: user.id, "tokenManager.accessToken": token, isBlocked: false, isActive: true },
-                    { __v: NOT, password: NOT, createdAt: NOT, updatedAt: NOT, role: NOT },
-                    { lean: true }
+                    {_id: user.id, "tokenManager.accessToken": token, isBlocked: false, isActive: true},
+                    {__v: NOT, password: NOT, createdAt: NOT, updatedAt: NOT, role: NOT},
+                    {lean: true}
                 );
                 if (userDetails && prefix === SERVER.AUTH_PREFIX) {
                     request.user = userDetails;
@@ -161,7 +161,7 @@ const handleToken = async authToken => {
     let token = authToken;
     let prefix = token.substring(NOT, AUTH_PREFIX_LENGTH);
     token = token.substring(AUTH_PREFIX_LENGTH);
-    return { token, prefix };
+    return {token, prefix};
 };
 
 

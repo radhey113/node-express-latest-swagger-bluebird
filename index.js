@@ -1,9 +1,8 @@
-
 'use strict';
 
-/** to load env variables **/ 
+/** to load env variables **/
 require('dotenv').config();
 
-/** to run server **/ 
+/** to run server **/
 require('./bin/server.js')();
 

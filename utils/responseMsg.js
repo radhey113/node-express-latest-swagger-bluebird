@@ -1,4 +1,3 @@
-
 'use strict';
 
 let responseMsg = {};
@@ -46,7 +45,7 @@ responseMsg.user = {
                        "data": {}
                     }
     `,
-    reset_password:`
+    reset_password: `
                     {
                         "statusCode": 200,
                         "message": "Your password has been successfully changed.",

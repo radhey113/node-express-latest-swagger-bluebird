@@ -1,14 +1,13 @@
-
 'use strict';
 let commonService = {};
-let { createToken } = require('../utils/utils');
+let {createToken} = require('../utils/utils');
 /**
  * Check data is already exist or not common function
  * @param requestBody
  * @returns {Promise<*>}
  */
 commonService.checkDataAlreadyExistOrNot = async (requestBody) => {
-    let alreadyExistUser = await MODELS.userModel.findOne({ email: requestBody.email });
+    let alreadyExistUser = await MODELS.userModel.findOne({email: requestBody.email});
     if (alreadyExistUser) {
         return alreadyExistUser;
     }
@@ -65,7 +64,6 @@ commonService.getManyPopulatedDoc = async (Model, Criteria, Projection, Options,
 };
 
 
-
 /**
  * remove one document common function
  * @param Model
@@ -97,7 +95,7 @@ commonService.userThirdPartyIdCheck = async (user, body) => {
     let thirdPartyCheck = {
         thirdParty: false
     };
-    if((user || {}).fbId || (body || {}).fbId){
+    if ((user || {}).fbId || (body || {}).fbId) {
         console.log(user.fbId);
         thirdPartyCheck.thirdParty = true;
         thirdPartyCheck['accessToken'] = createToken(user._id);
@@ -109,12 +107,13 @@ commonService.userThirdPartyIdCheck = async (user, body) => {
 commonService.updateAccessToken = async (Model, userId, accessToken, body) => {
     return await commonService.updateData(
         Model,
-        { _id: userId },
+        {_id: userId},
         {
             $set: {
                 tokenManager: [
-                    {accessToken: (accessToken || ''),
-                    deviceToken: (body.deviceToken || '')
+                    {
+                        accessToken: (accessToken || ''),
+                        deviceToken: (body.deviceToken || '')
                     }
                 ],
                 updatedAt: new Date(),

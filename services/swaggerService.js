@@ -82,9 +82,9 @@ class Swagger {
             .join('');
 
         const parameters = [];
-        const { body, params, query, headers, responseClass, formData } = joiDefinistions;
+        const {body, params, query, headers, responseClass, formData} = joiDefinistions;
 
-        if(formData){
+        if (formData) {
             parameters.push({
                 "in": "formData",
                 "name": "file",
@@ -121,7 +121,7 @@ class Swagger {
 
                 let index = requiredFields ? requiredFields.findIndex(key => key === param) : -1;
 
-                if(index > -1){
+                if (index > -1) {
                     toSwagger.properties.params.properties[param].required = true;
                 }
                 parameters.push({
@@ -139,7 +139,7 @@ class Swagger {
             keys.forEach((key) => {
                 let index = requiredFields ? requiredFields.findIndex(k => key === k) : -1;
 
-                if(index > -1){
+                if (index > -1) {
                     toSwagger.properties.query.properties[key].required = true;
                 }
                 parameters.push({

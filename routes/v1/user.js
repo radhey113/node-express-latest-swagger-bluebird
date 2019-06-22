@@ -1,61 +1,59 @@
-
 'use strict';
 
 const Joi = require('joi');
-const { LOGIN_TYPE, SERVER } = require('../../utils/constants');
-const { convertKeysValueToArray } = require('../../utils/utils');
+const {LOGIN_TYPE, SERVER} = require('../../utils/constants');
+const {convertKeysValueToArray} = require('../../utils/utils');
 
-const { user } = require('../../utils/responseMsg');
-const { authorization, convertErrorIntoReadableForm } = require('../../utils/utils');
+const {user} = require('../../utils/responseMsg');
+const {authorization, convertErrorIntoReadableForm} = require('../../utils/utils');
 
 const {
-    registerUser, signIn, forgotPassword,
-    changePassword_OTP, fileUpload
+    registerUser, signIn, forgotPassword, changePassword_OTP, fileUpload
 } = require('../../controllers').v1.userController;
 
 const signInType = convertKeysValueToArray(LOGIN_TYPE);
 
 let Routes = [
-	{
-		method: 'POST',
-		path: '/v1/register',
-		joiSchemaForSwagger: {
-			body: {
+    {
+        method: 'POST',
+        path: '/v1/register',
+        joiSchemaForSwagger: {
+            body: {
                 name: Joi.string().optional().allow(``).description(`User unique name.`).label(`Name`),
                 email: Joi.string().optional().allow(``).description(`User\'s email id.`).label(`Email`),
                 password: Joi.string().optional().allow(``).description(`User password.`).label(`Password`),
-				fbId: Joi.string().optional().allow(``).description(`User facebook Id.`).label(`Facebook Id`),
-				deviceToken: Joi.string().optional().allow(``).description(`User Device Token.`).label(`Device Token`),
+                fbId: Joi.string().optional().allow(``).description(`User facebook Id.`).label(`Facebook Id`),
+                deviceToken: Joi.string().optional().allow(``).description(`User Device Token.`).label(`Device Token`),
                 signUpType: Joi.number().required().description(
-					`Register with Email: 1, Register/Login with FB: 2, Register/Login as Guest: 3`
-				).valid(signInType).default(signInType[SERVER.ARRAY_FIRST_INDEX]).label(`Login type`)
-			},
-			group: `User`,
-			description: `Route to register an user to the system.`,
-			model: `Register`,
+                    `Register with Email: 1, Register/Login with FB: 2, Register/Login as Guest: 3`
+                ).valid(signInType).default(signInType[SERVER.ARRAY_FIRST_INDEX]).label(`Login type`)
+            },
+            group: `User`,
+            description: `Route to register an user to the system.`,
+            model: `Register`,
             responseClass: user.registerUser
-		},
+        },
         auth: false,
         failAction: convertErrorIntoReadableForm,
-		handler: registerUser,
-	},
+        handler: registerUser,
+    },
     {
-		method: 'POST',
-		path: '/v1/signin',
-		joiSchemaForSwagger: {
-			body: {
-				email: Joi.string().required().description('User email for signin.').label('Email'),
-				password: Joi.string().required().description('User password for signin.').label('Password'),
-				deviceToken: Joi.string().optional().description('User device token').label('Device Token')
-			},
-			group: 'User',
-			description: 'Route to signin an user from system.',
-			model: 'User SignIn',
-			responseClass: user.signIn
-		},
-		auth: false,
+        method: 'POST',
+        path: '/v1/signin',
+        joiSchemaForSwagger: {
+            body: {
+                email: Joi.string().required().description('User email for signin.').label('Email'),
+                password: Joi.string().required().description('User password for signin.').label('Password'),
+                deviceToken: Joi.string().optional().description('User device token').label('Device Token')
+            },
+            group: 'User',
+            description: 'Route to signin an user from system.',
+            model: 'User SignIn',
+            responseClass: user.signIn
+        },
+        auth: false,
         failAction: convertErrorIntoReadableForm,
-		handler: signIn
+        handler: signIn
     },
     {
         method: 'POST',
@@ -96,7 +94,7 @@ let Routes = [
         method: `POST`,
         path: `/v1/user/file_upload`,
         joiSchemaForSwagger: {
-            formData: { file: true },
+            formData: {file: true},
             group: `User File Upload`,
             description: `File Upload System.`,
             model: `User file upload.`,
