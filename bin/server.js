@@ -58,7 +58,7 @@ let startNodeserver = () => {
 
 /** connect database **/ 
 let connectDb = async() =>{
-    await Mongoose.connect(CONFIG.SERVER_CONFIG.MONGODB.URL, { useNewUrlParser: true, useCreateIndex: true });
+    // await Mongoose.connect(CONFIG.SERVER_CONFIG.MONGODB.URL, { useNewUrlParser: true, useCreateIndex: true });
     console.log('Mongo connected at ', CONFIG.SERVER_CONFIG.MONGODB.URL);
     await routeUtils.route(app,routes);
     await startNodeserver();
