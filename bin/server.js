@@ -9,9 +9,9 @@ Mongoose.Promise = require('bluebird');
 
 const routes = require('../routes');
 const CONFIG = require("../config");
-const {messageLogs} = require('../utils/utils');
+const { messageLogs } = require('../utils/utils');
 const routeUtils = require('../utils/routeUtils');
-const {startCron} = require('../services/cronService');
+const { startCron } = require('../services/cronService');
 
 /**creating express server app for server */
 const app = EXPRESS();
@@ -20,8 +20,8 @@ const app = EXPRESS();
  ***** Server Configuration *****
  ********************************/
 app.set('port', process.env.PORT || CONFIG.SERVER_CONFIG.PORT);
-app.use(require("body-parser").json({limit: '50mb'}));
-app.use(require("body-parser").urlencoded({limit: '50mb', extended: true}));
+app.use(require("body-parser").json({ limit: '50mb' }));
+app.use(require("body-parser").urlencoded({ limit: '50mb', extended: true }));
 
 
 /** middleware for api's logging with deployment mode */
@@ -61,16 +61,14 @@ let connectDb = async () => {
     console.log('Mongo connected at ', CONFIG.SERVER_CONFIG.MONGODB.URL);
     await routeUtils.route(app, routes);
     await startNodeserver();
-    
     // startCron(`*/5 * * * * *`);
 };
-
 
 module.exports = () => {
     connectDb()
         .then(() => {
             console.log(`Node server running on ${CONFIG.SERVER_CONFIG.HOST}:${CONFIG.SERVER_CONFIG.PORT}`);
         }).catch((err) => {
-        console.log(`Error in starting server ${err}`);
-    });
+            console.log(`Error in starting server ${err}`);
+        });
 };
