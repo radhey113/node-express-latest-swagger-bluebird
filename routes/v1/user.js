@@ -16,7 +16,7 @@ const signInType = convertKeysValueToArray(LOGIN_TYPE);
 let Routes = [
     {
         method: 'POST',
-        path: '/v1/register_1',
+        path: '/v1/register',
         joiSchemaForSwagger: {
             body: {
                 name: Joi.string().optional().allow(``).description(`User unique name.`).label(`Name`),
