@@ -61,6 +61,7 @@ let connectDb = async () => {
     console.log('Mongo connected at ', CONFIG.SERVER_CONFIG.MONGODB.URL);
     await routeUtils.route(app, routes);
     await startNodeserver();
+    
     // startCron(`*/5 * * * * *`);
 };
 
