@@ -134,18 +134,18 @@ class Swagger {
         }
 
         if (query) {
-            const keys = Object.keys(toSwagger.properties.query.properties).map((key) => key);
-            let requiredFields = toSwagger.properties.query.required;
+            const keys = Object.keys(toSwagger.properties.criteriaService.properties).map((key) => key);
+            let requiredFields = toSwagger.properties.criteriaService.required;
             keys.forEach((key) => {
                 let index = requiredFields ? requiredFields.findIndex(k => key === k) : -1;
 
                 if (index > -1) {
-                    toSwagger.properties.query.properties[key].required = true;
+                    toSwagger.properties.criteriaService.properties[key].required = true;
                 }
                 parameters.push({
-                    "in": "query",
+                    "in": "criteriaService.js",
                     "name": key,
-                    ...toSwagger.properties.query.properties[key]
+                    ...toSwagger.properties.criteriaService.properties[key]
                 })
             })
         }

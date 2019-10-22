@@ -45,8 +45,7 @@ commonService.getOneDoc = async (Model, Criteria, Projection, Options) => {
  * @returns {Promise<*>}
  */
 commonService.getManyDoc = async (Model, Criteria, Projection, Options) => {
-    const requiredData = await Model.findOne(Criteria, Projection, Options);
-    return requiredData;
+    return await Model.findOne(Criteria, Projection, Options);
 };
 
 
@@ -59,8 +58,7 @@ commonService.getManyDoc = async (Model, Criteria, Projection, Options) => {
  * @returns {Promise<*>}
  */
 commonService.getManyPopulatedDoc = async (Model, Criteria, Projection, Options, Populate) => {
-    const requiredData = await Model.findOne(Criteria, Projection, Options).populate(Populate);
-    return requiredData;
+    return await Model.findOne(Criteria, Projection, Options).populate(Populate);
 };
 
 
@@ -84,6 +82,17 @@ commonService.removeOne = async (Model, Criteria) => {
  */
 commonService.updateData = async (Model, Criteria, DataToUpdate, Options) => {
     return await Model.findOneAndUpdate(Criteria, DataToUpdate, Options);
+};
+
+
+/**
+ * Aggregate query
+ * @param Model
+ * @param Criteria
+ * @returns {Promise<*>}
+ */
+commonService.aggregateQuery = async (Model, Criteria) => {
+    return await Model.aggregate(Criteria);
 };
 
 /**

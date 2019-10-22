@@ -5,6 +5,7 @@ const {LOGIN_TYPE, RESPONSEMESSAGES, MESSAGES, SERVER} = require('../utils/const
 const {encryptPswrd, tokenManagerFun} = require('../utils/utils');
 const {userModel} = require('../models');
 const {saveData, getOneDoc, updateData} = require('./commonService');
+const {orQuery} = require('./criteriaService');
 
 const NOT = SERVER.NOT;
 /***

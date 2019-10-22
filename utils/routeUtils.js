@@ -44,8 +44,8 @@ let joiValidatorMethod = async (request, route) => {
     if (route.joiSchemaForSwagger.body && Object.keys(route.joiSchemaForSwagger.body).length) {
         request.body = await Joi.validate(request.body, route.joiSchemaForSwagger.body);
     }
-    if (route.joiSchemaForSwagger.query && Object.keys(route.joiSchemaForSwagger.query).length) {
-        request.query = await Joi.validate(request.query, route.joiSchemaForSwagger.query);
+    if (route.joiSchemaForSwagger.criteriaService && Object.keys(route.joiSchemaForSwagger.criteriaService).length) {
+        request.query = await Joi.validate(request.query, route.joiSchemaForSwagger.criteriaService);
     }
     if (route.joiSchemaForSwagger.headers && route.joiSchemaForSwagger.headers.authorization && Object.keys(route.joiSchemaForSwagger.headers).length) {
         request.headers = await Joi.validate(request.headers, route.joiSchemaForSwagger.headers);
@@ -87,7 +87,7 @@ let getHandlerMethod = (handler, fileUpload) => {
             let body = {
                 ...(request.body || {}),
                 ...(request.params || {}),
-                ...(request.query || {}),
+                ...(request.criteriaService || {}),
                 userDetatils: ((request || {}).user || {})
             };
             handler(body).then((result) => {

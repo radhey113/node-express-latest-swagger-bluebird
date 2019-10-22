@@ -1,14 +1,10 @@
 "use strict";
 
-const {
-    encryptPswrd, decryptPswrd,
-    generateJWTToken, sendEmailNodeMailer,
-    generateOTP, addTimeToDate, tokenManagerFun
-} = require('../../utils/utils');
+const {encryptPswrd, decryptPswrd, generateJWTToken, sendEmailNodeMailer, generateOTP, addTimeToDate, tokenManagerFun} = require('../../utils/utils');
 const {RESPONSEMESSAGES, MESSAGES, SERVER, EMAIL_TYPES, OTP_EXPIRY} = require("../../utils/constants");
-
 const {userModel, verificationModel} = require('../../models');
 const {getOneDoc, updateData, removeOne} = require('../../services/commonService');
+const {getCriteria, projectionCriteria, optionsCriteria} = require('../../services/criteriaService');
 const {signUp} = require('../../services/signUpService');
 
 const YES = SERVER.YES, NOT = SERVER.NOT;
@@ -36,10 +32,9 @@ userController.registerUser = (body) => {
  * @returns {Promise<*|{data, message, type, statusCode}>}
  */
 userController.signIn = async (body) => {
-    let Criteria = {email: body.email}, updatedData, Projection = {__v: NOT},
-        Options = {lean: true}, tokenManagerArr;
+    let updatedData, Options = {lean: true}, tokenManagerArr;
 
-    let user = await getOneDoc(userModel, Criteria, Projection, Options);
+    let user = await getOneDoc(userModel, getCriteria(body, {}), projectionCriteria(['__v'], 0), Options);
     if (!user) {
         throw RESPONSEMESSAGES.ERROR.DATA_NOT_FOUND(MESSAGES.INVALID_CREDENTIALS);
     }
