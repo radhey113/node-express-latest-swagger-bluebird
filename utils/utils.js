@@ -274,6 +274,19 @@ const currentTimeInMinutes = () => {
     return getTimeInMinutes;
 };
 
+/**
+ * Email or name validation
+ * @returns {Promise<void>}
+ */
+const emailOrNameValidation = (obj, body) => {
+    if (obj.email && obj.email === body.email) {
+        return RESPONSEMESSAGES.ERROR.BAD_REQUEST(MESSAGES.EMAIL_ALREADY_EXISTS);
+    } else if (obj.name && obj.name === body.name) {
+        return RESPONSEMESSAGES.ERROR.BAD_REQUEST(MESSAGES.NAME_ALREADY_EXISTS);
+    }
+    return '';
+};
+
 /*exporting all object from here*/
 module.exports = {
     encryptPswrd: encryptPswrd,
@@ -292,5 +305,6 @@ module.exports = {
     orCriteria: orCriteria,
     caseSensitive: caseSensitive,
     currentTimeInMinutes: currentTimeInMinutes,
-    customRequiredMsg: customRequiredMsg
+    customRequiredMsg: customRequiredMsg,
+    emailOrNameValidation
 };

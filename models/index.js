@@ -4,6 +4,6 @@
  *********** Model or collection Manager **********
  **************************************************/
 module.exports = {
-    userModel: require('./user'),
+    userSchema: require('./user'),
 };
 

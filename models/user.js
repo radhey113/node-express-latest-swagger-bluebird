@@ -16,12 +16,7 @@ const userSchema = new Schema({
     email: {type: String, unique: true, index: true, sparse: true},
     password: {type: String},
     createdAt: {type: Date, default: Date.now},
-
-    fbId: {type: String, default: ''},
-    signUpType: [{type: Number, enum: loginType, default: loginType[SERVER.ARRAY_FIRST_INDEX]}],
-    isFb: {type: Boolean, default: false},
-    isGuest: {type: Boolean, default: false},
     updatedAt: {type: Date, default: Date.now}
 });
 
-module.exports = MONGOOSE.model("user", userSchema);
+module.export = MONGOOSE.model("user", userSchema);

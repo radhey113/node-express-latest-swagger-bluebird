@@ -2,10 +2,9 @@
 
 const {encryptPswrd, decryptPswrd, generateJWTToken, sendEmailNodeMailer, generateOTP, addTimeToDate, tokenManagerFun} = require('../../utils/utils');
 const {RESPONSEMESSAGES, MESSAGES, SERVER, EMAIL_TYPES, OTP_EXPIRY} = require("../../utils/constants");
-const {userModel, verificationModel} = require('../../models');
-const {getOneDoc, updateData, removeOne} = require('../../services/commonService');
+const {userSchema} = require('../../models');
+const {getOneDoc, updateData, removeOne, signUp} = require('../../services/commonService');
 const {getCriteria, projectionCriteria, optionsCriteria} = require('../../services/criteriaService');
-const {signUp} = require('../../services/signUpService');
 
 const YES = SERVER.YES, NOT = SERVER.NOT;
 
@@ -17,8 +16,7 @@ let userController = {};
 /**function to register an user to the system. **/
 userController.registerUser = (body) => {
     return new Promise((resolve, reject) => {
-        signUp(body).then(user => {
-            delete user.signUpType;
+        signUp(userSchema, body).then(user => {
             resolve(RESPONSEMESSAGES.SUCCESS.MISSCELANEOUSAPI(MESSAGES.REGISTERED_SUCCESSFULLY, user));
         }).catch(error => {
             reject(error);
